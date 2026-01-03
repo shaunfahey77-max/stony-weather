@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StonyStation OS v4.2 | Professional Weather Intelligence</title>
+    <title>StonyStation OS | METEOROLOGICAL OPS</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,10 +13,8 @@
 
     <style>
         /* =========================================
-           1. CSS CORE VARIABLES & THEMING
-           Designed for high-contrast visibility.
-           =========================================
-        */
+           1. CORE THEME & VARIABLES
+           ========================================= */
         :root {
             --green-glow: #00f5b7;
             --text-primary: #f2f2f2;
@@ -25,11 +23,8 @@
             --body-background: #050a1a;
             --border-line: rgba(255, 255, 255, 0.12);
             --danger-red: #ff4d4d;
-            --info-blue: #00d2ff;
             --glass-effect: blur(40px) saturate(180%);
             --standard-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-            --animation-curve: cubic-bezier(0.19, 1, 0.22, 1);
-            --transition-speed: 0.4s;
         }
 
         body.light-mode {
@@ -40,74 +35,27 @@
             --border-line: rgba(0, 0, 0, 0.1);
         }
 
-        /* =========================================
-           2. GLOBAL RESET & BASE STYLING
-           Ensuring consistency across all browsers.
-           =========================================
-        */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            outline: none;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: "Poppins", sans-serif;
             background-color: var(--body-background);
             color: var(--text-primary);
             min-height: 100vh;
-            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             overflow-x: hidden;
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            transition: background-color 0.4s ease;
         }
 
         /* =========================================
-           3. KEYFRAME ANIMATIONS
-           =========================================
-        */
-        @keyframes revealUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulseThreat {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4);
-            }
-            70% {
-                transform: scale(1.05);
-                box-shadow: 0 0 0 20px rgba(255, 77, 77, 0);
-            }
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 77, 77, 0);
-            }
-        }
-
-        @keyframes rotationLoop {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* =========================================
-           4. MAC-STYLE INTERFACE COMPONENTS
-           =========================================
-        */
+           2. SYSTEM BAR & HEADER
+           ========================================= */
         .system-bar {
-            height: 40px;
+            height: 45px;
             background-color: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -119,640 +67,476 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .bar-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
         .zip-search-box {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            width: 90px;
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 0.8rem;
+            color: #fff;
+            width: 110px;
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-size: 0.85rem;
             text-align: center;
-            transition: 0.3s ease;
+            outline: none;
+            transition: 0.3s;
         }
 
-        .zip-search-box:focus {
-            border-color: var(--green-glow);
-            background: rgba(255, 255, 255, 0.15);
-        }
+        .zip-search-box:focus { border-color: var(--green-glow); background: rgba(255, 255, 255, 0.2); }
 
-        /* =========================================
-           5. DASHBOARD HEADER
-           =========================================
-        */
         .main-header {
-            padding: 100px 20px 50px;
+            padding: 110px 20px 40px;
             text-align: center;
-            animation: revealUp 0.8s var(--animation-curve);
+            width: 100%;
+            max-width: 1400px;
         }
 
         .brand-logo {
-            font-size: clamp(4rem, 15vw, 9rem);
+            font-size: clamp(4rem, 9vw, 6.5rem);
             font-weight: 900;
-            color: #ffffff;
-            letter-spacing: -2px;
-            margin: 0;
-            line-height: 0.85;
-            text-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            letter-spacing: -4px;
+            text-transform: uppercase;
+            line-height: 0.8;
         }
 
         .brand-subtitle {
             display: block;
-            margin-top: 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
             letter-spacing: 12px;
-            text-transform: uppercase;
             color: var(--green-glow);
-            opacity: 0.9;
+            text-indent: 12px;
         }
 
         /* =========================================
-           6. GRID ENGINE & ARCHITECTURE
-           =========================================
-        */
+           3. HARDENED RESPONSIVE GRID
+           ========================================= */
         .dashboard-container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 0 40px 160px;
+            width: 95%;
+            max-width: 1600px; 
             display: grid;
-            grid-template-columns: 1.3fr 0.7fr;
+            grid-template-columns: 1fr 480px; 
             grid-template-areas: 
                 "primary sidebar"
                 "radar radar";
-            gap: 40px;
+            gap: 25px;
+            padding-bottom: 150px;
         }
 
-        .grid-primary { grid-area: primary; animation: revealUp 1s var(--animation-curve); }
-        .grid-sidebar { grid-area: sidebar; animation: revealUp 1.2s var(--animation-curve); }
-        .grid-radar   { grid-area: radar;   animation: revealUp 1.4s var(--animation-curve); }
+        .grid-primary { grid-area: primary; }
+        .grid-sidebar { grid-area: sidebar; }
+        .grid-radar   { grid-area: radar; position: relative; }
 
-        @media (max-width: 1400px) {
+        @media (max-width: 1300px) {
             .dashboard-container {
                 grid-template-columns: 1fr;
-                grid-template-areas: 
-                    "primary"
-                    "sidebar"
-                    "radar";
-                padding: 0 20px 150px;
+                grid-template-areas: "primary" "sidebar" "radar";
             }
         }
 
         /* =========================================
-           7. MODULES & TILE STYLING
-           =========================================
-        */
+           4. TILE & MODULE DESIGN
+           ========================================= */
         .weather-tile {
             background-color: var(--tile-background);
-            border-radius: 50px;
-            padding: 60px;
+            border-radius: 40px;
+            padding: 40px;
             border: 1px solid var(--border-line);
             backdrop-filter: var(--glass-effect);
-            -webkit-backdrop-filter: var(--glass-effect);
             box-shadow: var(--standard-shadow);
             height: 100%;
-            position: relative;
         }
 
-        .hero-display {
-            display: grid;
-            grid-template-columns: auto 1fr auto;
-            gap: 60px;
+        .hero-stats {
+            display: flex;
             align-items: center;
-        }
-
-        @media (max-width: 900px) {
-            .hero-display {
-                grid-template-columns: 1fr;
-                text-align: center;
-                justify-items: center;
-            }
+            gap: 35px;
+            margin-bottom: 30px;
         }
 
         .temp-main {
-            font-size: 13rem;
+            font-size: clamp(5rem, 10vw, 8.5rem);
             font-weight: 900;
             color: var(--green-glow);
-            line-height: 0.7;
-            letter-spacing: -12px;
+            line-height: 0.8;
+            letter-spacing: -7px;
         }
 
-        .summary-label {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: var(--green-glow);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-top: 20px;
-        }
-
-        /* =========================================
-           8. HOURLY TIMELINE SCROLLER
-           =========================================
-        */
-        .hourly-section {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border-line);
-        }
-
-        .hourly-scroller {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            padding: 20px 0;
-            scrollbar-width: thin;
-            scrollbar-color: var(--green-glow) transparent;
-        }
-
-        .hourly-scroller::-webkit-scrollbar { height: 6px; }
-        .hourly-scroller::-webkit-scrollbar-thumb { background: var(--green-glow); border-radius: 10px; }
-
-        .hour-pill {
-            min-width: 110px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-line);
-            padding: 25px 15px;
-            border-radius: 30px;
-            text-align: center;
-            transition: 0.3s ease;
-        }
-
-        .hour-pill:hover {
-            border-color: var(--green-glow);
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateY(-5px);
-        }
-
-        /* =========================================
-           9. SENSOR DATA GRID
-           =========================================
-        */
         .sensor-matrix {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-top: 60px;
-        }
-
-        @media (max-width: 650px) {
-            .sensor-matrix { grid-template-columns: repeat(2, 1fr); }
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .sensor-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-line);
-            padding: 35px 20px;
-            border-radius: 35px;
+            padding: 25px;
+            border-radius: 25px;
             text-align: center;
-            transition: 0.4s var(--animation-curve);
         }
 
-        .sensor-item:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.06);
-            border-color: var(--green-glow);
-        }
-
-        .sensor-key {
-            display: block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 2px;
-            opacity: 0.5;
-            margin-bottom: 12px;
-        }
-
-        .sensor-val {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
+        .sensor-key { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; }
+        .sensor-val { font-size: 1.9rem; font-weight: 700; display: block; margin-top: 5px; }
 
         /* =========================================
-           10. THE 14-DAY FORECAST (2-COLUMN)
-           =========================================
-        */
-        .forecast-module-header {
-            margin-bottom: 40px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-transform: uppercase;
-            letter-spacing: 6px;
-            font-size: 0.9rem;
-            color: var(--green-glow);
-        }
-
-        .forecast-grid-layout {
+           5. 14-DAY TWO-COLUMN SIDEBAR
+           ========================================= */
+        .forecast-grid-2col {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        @media (max-width: 850px) {
-            .forecast-grid-layout {
-                grid-template-columns: 1fr;
-            }
+            gap: 12px;
         }
 
         .forecast-day-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-line);
-            padding: 25px;
-            border-radius: 35px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            transition: 0.3s var(--animation-curve);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 18px 10px;
+            border-radius: 24px;
+            border: 1px solid var(--border-line);
+            text-align: center;
+            transition: 0.3s;
         }
 
-        .forecast-day-card:hover {
-            border-color: var(--green-glow);
-            background: rgba(255, 255, 255, 0.07);
-            transform: scale(1.03);
-        }
-
-        .day-title { font-weight: 700; font-size: 0.95rem; }
-        .day-icon { font-size: 2.2rem; }
-        .day-hi { color: var(--green-glow); font-weight: 800; font-size: 1.4rem; }
-        .day-lo { opacity: 0.4; font-size: 1rem; margin-left: 8px; }
+        .forecast-day-card:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-3px); }
+        .day-label { font-size: 0.75rem; font-weight: 700; opacity: 0.6; }
+        .day-temp-high { color: var(--green-glow); font-weight: 800; font-size: 1.1rem; }
+        .day-temp-low { opacity: 0.4; font-size: 0.9rem; margin-left: 4px; }
 
         /* =========================================
-           11. RADAR SYSTEM
-           =========================================
-        */
-        .radar-frame-wrapper {
-            height: 750px;
-            border-radius: 50px;
+           6. RADAR MODULE & FULLSCREEN
+           ========================================= */
+        .radar-box {
+            height: 600px;
+            border-radius: 45px;
             overflow: hidden;
-            background: #000000;
-            border: 2px solid var(--border-line);
-            position: relative;
+            border: 1px solid var(--border-line);
+            background: #000;
+            transition: 0.5s var(--animation-curve);
         }
 
-        #weatherMapFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
+        .radar-box.is-fullscreen {
+            position: fixed;
+            inset: 20px;
+            height: calc(100vh - 40px);
+            z-index: 10001;
+            border-radius: 30px;
+        }
+
+        .radar-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-line);
+            color: #fff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* =========================================
-           12. CONTROL BUTTONS & ACTIONS
-           =========================================
-        */
-        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+           7. HOURLY TIMELINE
+           ========================================= */
+        .hourly-scroller {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 25px 0;
+            margin: 20px 0;
+            border-top: 1px solid var(--border-line);
+            scrollbar-width: none;
+        }
 
+        .hour-pill {
+            min-width: 90px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 20px 10px;
+            border-radius: 25px;
+            text-align: center;
+            border: 1px solid var(--border-line);
+        }
+
+        /* =========================================
+           8. BUTTONS, MODALS, DOCK
+           ========================================= */
         .os-button {
-            padding: 22px 35px;
-            border-radius: 22px;
+            padding: 16px 28px;
+            border-radius: 20px;
             border: 2px solid var(--green-glow);
             background: transparent;
             color: var(--green-glow);
             font-weight: 800;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
+            font-size: 0.75rem;
             cursor: pointer;
-            transition: 0.4s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            transition: 0.3s;
         }
 
-        .os-button:hover {
-            background: var(--green-glow);
-            color: #000;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 245, 183, 0.3);
-        }
+        .os-button:hover { background: var(--green-glow); color: #000; box-shadow: 0 0 20px rgba(0, 245, 183, 0.3); }
 
-        .btn-warning {
+        .btn-alert.has-alerts {
             border-color: var(--danger-red);
             color: var(--danger-red);
+            animation: pulse-alert 2s infinite;
         }
 
-        .btn-warning.is-active {
-            animation: pulseThreat 2s infinite;
-            background: rgba(255, 77, 77, 0.1);
+        @keyframes pulse-alert {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; box-shadow: 0 0 20px var(--danger-red); }
+            100% { opacity: 1; }
         }
 
-        /* =========================================
-           13. MODAL OVERLAY ENGINE
-           =========================================
-        */
-        .modal-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(25px);
-            z-index: 20000;
-            padding: 50px;
-        }
-
-        .modal-body {
-            background: var(--tile-background);
-            border: 1px solid var(--border-line);
-            border-radius: 50px;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 70px;
-            position: relative;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .modal-close-trigger {
-            position: absolute;
-            top: 35px;
-            right: 45px;
-            font-size: 3rem;
-            color: var(--green-glow);
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        /* =========================================
-           14. BOTTOM SYSTEM DOCK
-           =========================================
-        */
         .bottom-dock {
             position: fixed;
-            bottom: 35px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(35px);
-            padding: 15px 45px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(25px);
+            padding: 18px 45px;
             border-radius: 35px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
             display: flex;
-            gap: 45px;
+            gap: 40px;
             z-index: 10000;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-line);
         }
 
-        .dock-icon {
-            color: #ffffff;
-            font-size: 1.7rem;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .dock-icon { font-size: 1.6rem; cursor: pointer; transition: 0.3s; opacity: 0.7; }
+        .dock-icon:hover { opacity: 1; transform: translateY(-8px) scale(1.2); color: var(--green-glow); }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(20px);
+            z-index: 20000;
+            padding: 40px;
         }
 
-        .dock-icon:hover {
-            color: var(--green-glow);
-            transform: scale(1.5) translateY(-12px);
+        .modal-content {
+            background: var(--tile-background);
+            border: 1px solid var(--border-line);
+            padding: 50px;
+            border-radius: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
         }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
     <nav class="system-bar">
-        <div class="bar-section">
+        <div style="display: flex; gap: 20px; align-items: center;">
             <i class="fa-brands fa-apple" style="color: #fff;"></i>
-            <span style="font-weight: 700; color: #fff; font-size: 0.9rem;">StonyStation OS</span>
-            <input type="text" id="cityZipSearch" class="zip-search-box" maxlength="5" placeholder="ZIP CODE">
+            <span style="font-weight: 800; font-size: 0.8rem; letter-spacing: 1px;">STONYSTATION OS</span>
+            <input type="text" id="zipSearch" class="zip-search-box" maxlength="5" placeholder="ZIP CODE">
         </div>
-        <div class="bar-section">
-            <span id="digitalClockDisplay" style="color: #fff; font-weight: 500; letter-spacing: 1px;">--:--:--</span>
-        </div>
+        <div id="osClock" style="font-weight: 700; font-size: 0.9rem; opacity: 0.9;">--:--:--</div>
     </nav>
 
     <header class="main-header">
         <h1 class="brand-logo">STONY</h1>
-        <span class="brand-subtitle">Meteorological Ops Center</span>
+        <span class="brand-subtitle">WEATHER INTELLIGENCE HUB</span>
     </header>
 
     <main class="dashboard-container">
         
         <section class="grid-primary">
             <div class="weather-tile">
-                <div class="hero-display">
-                    <img src="mascot.png" alt="Station Mascot" id="stationMascot" width="170" style="border-radius: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);">
-                    <div class="main-stats">
-                        <div class="temp-main" id="liveTempDisplay">--°</div>
-                        <div class="summary-label" id="liveSummaryText">Scanning Sky...</div>
+                <div class="hero-stats">
+                    <img src="mascot.png" id="stonyMascot" width="140" style="border-radius: 30px; border: 1px solid var(--border-line);">
+                    <div>
+                        <div class="temp-main" id="currentTemp">--°</div>
+                        <div id="currentSummary" style="font-weight: 800; text-transform: uppercase; letter-spacing: 4px; opacity: 0.8;">Syncing Satellite...</div>
                     </div>
-                    <div class="btn-group">
-                        <button class="os-button" onclick="toggleModal('meteorologyModal')">
-                            <i class="fa-solid fa-microscope"></i> Analysis
-                        </button>
-                        <button class="os-button btn-warning" id="hazardStatusBtn" onclick="toggleModal('alertsModal')">
-                            <i class="fa-solid fa-shield-virus"></i> Safety Scan
-                        </button>
+                    <div style="margin-left: auto; display: flex; flex-direction: column; gap: 12px;">
+                        <button class="os-button" onclick="toggleModal('modalDiscussion')">Discussion</button>
+                        <button class="os-button btn-alert" id="hazardBtn" onclick="toggleModal('modalAlerts')">Safety</button>
                     </div>
                 </div>
 
-                <p id="longNarrativeText" style="margin-top: 50px; font-size: 1.35rem; font-weight: 300; line-height: 1.9; color: var(--text-secondary);"></p>
+                <p id="detailedForecast" style="font-size: 1.05rem; line-height: 1.8; opacity: 0.8; margin-bottom: 25px;"></p>
 
-                <div class="hourly-section">
-                    <h5 style="text-transform: uppercase; letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 25px; opacity: 0.6;">High-Resolution Timeline</h5>
-                    <div id="hourlyTimelineContainer" class="hourly-scroller">
-                        </div>
-                </div>
+                <div class="hourly-scroller" id="hourlyList"></div>
 
                 <div class="sensor-matrix">
-                    <div class="sensor-item"><span class="sensor-key">Apparent Temp</span><span class="sensor-val" id="statFeels">--</span></div>
-                    <div class="sensor-item"><span class="sensor-key">Wind Speed</span><span class="sensor-val" id="statWind">--</span></div>
-                    <div class="sensor-item"><span class="sensor-key">Relative Humidity</span><span class="sensor-val" id="statHumid">--</span></div>
-                    <div class="sensor-item"><span class="sensor-key">Visual Range</span><span class="sensor-val" id="statVis">--</span></div>
-                    <div class="sensor-item"><span class="sensor-key">Ultraviolet</span><span class="sensor-val" id="statUV">--</span></div>
-                    <div class="sensor-item"><span class="sensor-key">Dew Point</span><span class="sensor-val" id="statDew">--</span></div>
+                    <div class="sensor-item"><span class="sensor-key">Feels Like</span><span class="sensor-val" id="statFeels">--</span></div>
+                    <div class="sensor-item"><span class="sensor-key">Wind Gusts</span><span class="sensor-val" id="statWind">--</span></div>
+                    <div class="sensor-item"><span class="sensor-key">Visibility</span><span class="sensor-val" id="statVis">--</span></div>
+                    <div class="sensor-item"><span class="sensor-key">UV Index</span><span class="sensor-val" id="statUV">--</span></div>
                 </div>
             </div>
         </section>
 
         <section class="grid-sidebar">
             <div class="weather-tile">
-                <div class="forecast-module-header">
-                    <i class="fa-solid fa-calendar-alt"></i>
-                    <span>14-Day Global Trajectory</span>
-                </div>
-                <div id="longRangeGridContainer" class="forecast-grid-layout">
+                <h3 style="letter-spacing: 4px; font-size: 0.75rem; margin-bottom: 25px; opacity: 0.5; text-transform: uppercase;">14-Day Global Outlook</h3>
+                <div id="forecastGrid" class="forecast-grid-2col">
                     </div>
             </div>
         </section>
 
         <section class="grid-radar">
-            <div class="weather-tile radar-frame-wrapper">
-                <iframe id="weatherMapFrame" src=""></iframe>
+            <div class="radar-controls">
+                <div class="control-btn" onclick="toggleRadarFullscreen()"><i class="fa-solid fa-expand"></i></div>
+            </div>
+            <div class="radar-box" id="radarContainer">
+                <iframe id="radarFrame" style="width:100%; height:100%; border:none;" src=""></iframe>
             </div>
         </section>
 
     </main>
 
     <div class="bottom-dock">
-        <div class="dock-icon" title="Toggle Appearance" onclick="themeSwitcher()"><i class="fa-solid fa-circle-half-stroke"></i></div>
-        <div class="dock-icon" id="syncStationBtn" title="Synchronize Data" onclick="refreshDashboard()"><i class="fa-solid fa-arrows-rotate"></i></div>
-        <div class="dock-icon" title="Build Info" onclick="alert('StonyStation Pro OS\\nVersion 4.2.0 Build 2024')"><i class="fa-solid fa-circle-info"></i></div>
+        <i class="fa-solid fa-circle-half-stroke dock-icon" onclick="document.body.classList.toggle('light-mode')"></i>
+        <i class="fa-solid fa-arrows-rotate dock-icon" onclick="refreshCore()"></i>
+        <i class="fa-solid fa-map-location-dot dock-icon" onclick="toggleRadarFullscreen()"></i>
+        <i class="fa-solid fa-circle-info dock-icon" onclick="alert('StonyStation OS v4.7 [Build 2026]')"></i>
     </div>
 
-    <div id="meteorologyModal" class="modal-screen">
-        <div class="modal-body">
-            <span class="modal-close-trigger" onclick="toggleModal('meteorologyModal')">&times;</span>
-            <h2 style="color: var(--green-glow); margin-bottom: 30px; font-size: 2.2rem; font-weight: 800;">Meteorological Discussion</h2>
-            <pre id="afdContentBody" style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 1.05rem; line-height: 1.7; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 35px; border-radius: 20px; border: 1px solid var(--border-line);"></pre>
+    <div id="modalDiscussion" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:var(--green-glow); margin-bottom:20px; letter-spacing:2px;">METEOROLOGICAL ANALYSIS</h2>
+            <pre id="afdText" style="white-space: pre-wrap; font-family: monospace; font-size:0.9rem; line-height:1.5; opacity:0.8;"></pre>
+            <button class="os-button" style="margin-top:30px;" onclick="toggleModal('modalDiscussion')">Exit</button>
         </div>
     </div>
 
-    <div id="alertsModal" class="modal-screen">
-        <div class="modal-body">
-            <span class="modal-close-trigger" onclick="toggleModal('alertsModal')">&times;</span>
-            <h2 style="color: var(--danger-red); margin-bottom: 30px; font-size: 2.2rem; font-weight: 800;">Severe Weather Bulletins</h2>
-            <div id="alertsContentList" style="line-height: 1.8; font-size: 1.15rem;">Initiating safety scan...</div>
+    <div id="modalAlerts" class="modal-overlay">
+        <div class="modal-content">
+            <h2 style="color:var(--danger-red); margin-bottom:20px;">NATIONAL WEATHER SERVICE ALERTS</h2>
+            <div id="alertContent">Checking for active hazards...</div>
+            <button class="os-button" style="margin-top:30px;" onclick="toggleModal('modalAlerts')">Close</button>
         </div>
     </div>
 
     <script>
-        /**
-         * MAPS WEATHER CODES TO VISUAL EMOJIS
-         */
-        function weatherCodeToEmoji(code) {
-            const dictionary = {
-                0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
-                45: "🌫️", 48: "🌫️", 51: "🌦️", 53: "🌦️", 55: "🌦️",
-                61: "🌧️", 63: "🌧️", 65: "🌧️", 66: "🌨️", 67: "🌨️",
-                71: "❄️", 73: "❄️", 75: "❄️", 77: "🌨️",
-                80: "🌧️", 81: "🌧️", 82: "🌧️", 85: "🌨️", 86: "🌨️",
-                95: "⛈️", 96: "⛈️", 99: "⛈️"
-            };
-            return dictionary[code] || "☁️";
-        }
+        const conditionIcons = { 0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 51: "🌦️", 61: "🌧️", 71: "❄️", 95: "⛈️" };
 
-        /**
-         * MASTER DASHBOARD REFRESHER
-         */
-        async function refreshDashboard() {
-            const icon = document.querySelector('#syncStationBtn i');
-            icon.style.animation = "rotationLoop 1s linear infinite";
-            
-            const zipInput = document.getElementById('cityZipSearch').value || "03101";
-            
+        async function refreshCore() {
+            const zip = document.getElementById('zipSearch').value || "03101";
             try {
-                const geoResponse = await fetch(`https://api.zippopotam.us/us/${zipInput}`);
-                if (!geoResponse.ok) throw new Error("Invalid Location Identity");
-                const geoData = await geoResponse.json();
-                const lat = geoData.places[0].latitude;
-                const lon = geoData.places[0].longitude;
+                // 1. Convert ZIP to Lat/Lon
+                const geoRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
+                const geoData = await geoRes.json();
+                const { latitude: lat, longitude: lon } = geoData.places[0];
 
-                document.getElementById('weatherMapFrame').src = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar&m=auto&w=soft`;
+                // 2. Update Radar
+                document.getElementById('radarFrame').src = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar`;
 
-                const apiString = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,uv_index,visibility,dew_point_2m&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`;
-                const wRes = await fetch(apiString);
-                const wData = await wRes.json();
+                // 3. Fetch Open-Meteo Data
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,visibility&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`);
+                const weatherData = await weatherRes.json();
 
-                document.getElementById('liveTempDisplay').innerText = Math.round(wData.current.temperature_2m) + "°";
-                document.getElementById('statFeels').innerText = Math.round(wData.current.apparent_temperature) + "°";
-                document.getElementById('statWind').innerText = Math.round(wData.current.wind_speed_10m) + " mph";
-                document.getElementById('statHumid').innerText = wData.current.relative_humidity_2m + "%";
-                document.getElementById('statVis').innerText = (wData.current.visibility / 1609).toFixed(1) + " mi";
-                document.getElementById('statUV').innerText = wData.current.uv_index;
-                document.getElementById('statDew').innerText = Math.round(wData.current.dew_point_2m) + "°";
+                // Current Stats
+                document.getElementById('currentTemp').innerText = Math.round(weatherData.current.temperature_2m) + "°";
+                document.getElementById('statFeels').innerText = Math.round(weatherData.current.apparent_temperature) + "°";
+                document.getElementById('statWind').innerText = Math.round(weatherData.current.wind_speed_10m) + " mph";
+                document.getElementById('statVis').innerText = (weatherData.current.visibility / 1609).toFixed(1) + " mi";
+                document.getElementById('statUV').innerText = weatherData.current.uv_index;
 
-                const hourlyWrap = document.getElementById('hourlyTimelineContainer');
+                // 4. Hourly Scroller (15 Hours)
+                const hourlyWrap = document.getElementById('hourlyList');
                 hourlyWrap.innerHTML = "";
-                for (let i = 0; i < 24; i++) {
-                    const timeLabel = new Date(wData.hourly.time[i]).toLocaleTimeString([], { hour: 'numeric' });
+                for(let i=0; i<15; i++) {
+                    const timeLabel = new Date(weatherData.hourly.time[i]).toLocaleTimeString([], {hour: 'numeric'});
                     hourlyWrap.innerHTML += `
                         <div class="hour-pill">
-                            <span class="h-time">${timeLabel}</span>
-                            <span style="font-size: 1.8rem; display: block; margin: 12px 0;">${weatherCodeToEmoji(wData.hourly.weather_code[i])}</span>
-                            <span class="h-temp">${Math.round(wData.hourly.temperature_2m[i])}°</span>
-                        </div>
-                    `;
+                            <span style="font-size:0.75rem; opacity:0.6;">${timeLabel}</span><br>
+                            <span style="font-size:1.6rem; margin:8px 0; display:block;">${conditionIcons[weatherData.hourly.weather_code[i]] || "☁️"}</span>
+                            <strong>${Math.round(weatherData.hourly.temperature_2m[i])}°</strong>
+                        </div>`;
                 }
 
-                const gridWrap = document.getElementById('longRangeGridContainer');
-                gridWrap.innerHTML = "";
-                wData.daily.time.forEach((day, idx) => {
-                    const dateObj = new Date(day + 'T00:00');
-                    const formattedDay = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
-                    gridWrap.innerHTML += `
+                // 5. 14-Day 2-Column Grid
+                const forecastGrid = document.getElementById('forecastGrid');
+                forecastGrid.innerHTML = "";
+                weatherData.daily.time.forEach((day, i) => {
+                    const d = new Date(day + 'T00:00').toLocaleDateString('en-US', {weekday: 'short', month: 'numeric', day: 'numeric'});
+                    forecastGrid.innerHTML += `
                         <div class="forecast-day-card">
-                            <span class="day-title">${formattedDay}</span>
-                            <span class="day-icon">${weatherCodeToEmoji(wData.daily.weather_code[idx])}</span>
+                            <span class="day-label">${d}</span>
+                            <span style="font-size:1.7rem; margin:10px 0;">${conditionIcons[weatherData.daily.weather_code[i]] || "☁️"}</span>
                             <div>
-                                <span class="day-hi">${Math.round(wData.daily.temperature_2m_max[idx])}°</span>
-                                <span class="day-lo">${Math.round(wData.daily.temperature_2m_min[idx])}°</span>
+                                <span class="day-temp-high">${Math.round(weatherData.daily.temperature_2m_max[i])}°</span>
+                                <span class="day-temp-low">${Math.round(weatherData.daily.temperature_2m_min[i])}°</span>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
 
-                const nwsPointRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
-                const nwsPoint = await nwsPointRes.json();
+                // 6. NWS Narrative & Alerts
+                const pointRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+                const pointData = await pointRes.json();
+                const forecastRes = await fetch(pointData.properties.forecast);
+                const forecastData = await forecastRes.json();
                 
-                const nwsForecastRes = await fetch(nwsPoint.properties.forecast);
-                const nwsForecast = await nwsForecastRes.json();
-                
-                document.getElementById('liveSummaryText').innerText = nwsForecast.properties.periods[0].shortForecast;
-                document.getElementById('longNarrativeText').innerText = nwsForecast.properties.periods[0].detailedForecast;
+                document.getElementById('currentSummary').innerText = forecastData.properties.periods[0].shortForecast;
+                document.getElementById('detailedForecast').innerText = forecastData.properties.periods[0].detailedForecast;
 
+                // Hazards
                 const alertRes = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
                 const alertData = await alertRes.json();
-                const alertBtn = document.getElementById('hazardStatusBtn');
-                const alertContent = document.getElementById('alertsContentList');
-
-                if (alertData.features && alertData.features.length > 0) {
-                    alertBtn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${alertData.features.length} ACTIVE ALERTS`;
-                    alertBtn.classList.add('is-active');
-                    alertContent.innerHTML = alertData.features.map(f => `
-                        <div style="background: rgba(255, 77, 77, 0.08); border-left: 6px solid var(--danger-red); padding: 25px; border-radius: 20px; margin-bottom: 25px;">
-                            <h3 style="color: var(--danger-red); margin-bottom: 10px;">${f.properties.event}</h3>
-                            <p style="font-weight: 700;">${f.properties.headline}</p>
-                            <p style="margin-top: 12px; opacity: 0.85; font-size: 1rem;">${f.properties.description}</p>
-                        </div>
-                    `).join('');
+                const hBtn = document.getElementById('hazardBtn');
+                if(alertData.features.length > 0) {
+                    hBtn.innerText = "HAZARDS DETECTED";
+                    hBtn.classList.add('has-alerts');
+                    document.getElementById('alertContent').innerHTML = alertData.features.map(f => `
+                        <div style="margin-bottom:25px; padding-left:20px; border-left:4px solid var(--danger-red);">
+                            <h3 style="color:var(--danger-red)">${f.properties.event}</h3>
+                            <p style="margin-top:10px; opacity:0.8;">${f.properties.headline}</p>
+                        </div>`).join('');
                 } else {
-                    alertBtn.innerHTML = '<i class="fa-solid fa-shield-halved"></i> No Active Hazards';
-                    alertBtn.classList.remove('is-active');
-                    alertContent.innerHTML = `<div style="text-align: center; padding: 60px;"><i class="fa-solid fa-circle-check" style="font-size: 4.5rem; color: var(--green-glow); margin-bottom: 25px;"></i><h3>All Clear</h3><p>No threats detected.</p></div>`;
+                    hBtn.innerText = "SAFETY SCAN";
+                    hBtn.classList.remove('has-alerts');
+                    document.getElementById('alertContent').innerText = "Atmosphere is currently stable. No active warnings.";
                 }
 
-                const afdListRes = await fetch(`https://api.weather.gov/products/types/AFD/locations/${nwsPoint.properties.gridId}`);
-                const afdList = await afdListRes.json();
-                if (afdList['@graph'] && afdList['@graph'].length > 0) {
-                    const afdProductRes = await fetch(afdList['@graph'][0]['@id']);
-                    const afdProduct = await afdProductRes.json();
-                    document.getElementById('afdContentBody').innerText = afdProduct.productText;
+                // Meteorological Discussion (AFD)
+                const afdList = await fetch(`https://api.weather.gov/products/types/AFD/locations/${pointData.properties.gridId}`);
+                const afdData = await afdList.json();
+                if(afdData['@graph'].length > 0) {
+                    const afdFull = await fetch(afdData['@graph'][0]['@id']);
+                    const afdJson = await afdFull.json();
+                    document.getElementById('afdText').innerText = afdJson.productText;
                 }
 
-            } catch (error) {
-                console.error("CRITICAL SYSTEM FAILURE:", error);
-                document.getElementById('liveSummaryText').innerText = "SYSTEM ERROR";
-            } finally {
-                icon.style.animation = "none";
-            }
+            } catch (err) { console.error("OS Update Failed", err); }
         }
 
-        function themeSwitcher() { document.body.classList.toggle('light-mode'); }
+        // --- UI HELPERS ---
         function toggleModal(id) {
-            const el = document.getElementById(id);
-            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+            const m = document.getElementById(id);
+            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
-        
+
+        function toggleRadarFullscreen() {
+            document.getElementById('radarContainer').classList.toggle('is-fullscreen');
+        }
+
         setInterval(() => {
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('digitalClockDisplay').innerText = time;
+            document.getElementById('osClock').innerText = new Date().toLocaleTimeString();
         }, 1000);
 
-        document.getElementById('cityZipSearch').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') refreshDashboard();
-        });
-
-        window.onload = refreshDashboard;
+        document.getElementById('zipSearch').addEventListener('keypress', e => { if(e.key === 'Enter') refreshCore(); });
+        window.onload = refreshCore;
     </script>
 </body>
 </html>
