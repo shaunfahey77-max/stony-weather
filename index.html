@@ -343,14 +343,83 @@
          * Core Station Refresh Logic
          */
         async function refreshStation() {
-            const zip = document.getElementById('zipInput').value || "03101";
-            
-            try {
-                // 1. Geocoding via Zippopotam
-                const geoResponse = await fetch(`https://api.zippopotam.us/us/${zip}`);
-                const geoData = await geoResponse.json();
-                const { latitude: lat, longitude: lon } = geoData.places[0];
+    const zip = document.getElementById('zipInput').value || "03101";
+    
+    try {
+        // 1. Precise Geocoding
+        const geoResponse = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        const geoData = await geoResponse.json();
+        const { latitude: lat, longitude: lon } = geoData.places[0];
 
+        // 2. FIXED RADAR URL
+        // Using embed.ventusky.com is required for iframes
+        // p = position (lat;lon;zoom), l = layer, m = model (auto is safest), w = wind style
+        const radarUrl = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar&m=auto&w=soft`;
+        document.getElementById('radarFrame').src = radarUrl;
+
+        // 3. Open-Meteo Current & 14-Day Data
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,visibility,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`;
+        const wRes = await fetch(weatherUrl);
+        const w = await wRes.json();
+
+        // Update UI Sensors
+        document.getElementById('dispTemp').innerText = Math.round(w.current.temperature_2m) + "°";
+        document.getElementById('valFeels').innerText = Math.round(w.current.apparent_temperature) + "°";
+        document.getElementById('valWind').innerText = Math.round(w.current.wind_speed_10m) + " mph";
+        document.getElementById('valHum').innerText = w.current.relative_humidity_2m + "%";
+        document.getElementById('valVis').innerText = (w.current.visibility / 1609).toFixed(1) + " mi";
+        document.getElementById('valUV').innerText = w.current.uv_index;
+        document.getElementById('valDew').innerText = Math.round(w.current.dew_point_2m) + "°";
+
+        // Build 14-Day Grid
+        const grid = document.getElementById('gridForecast');
+        grid.innerHTML = "";
+        w.daily.time.forEach((time, i) => {
+            const dateObj = new Date(time + 'T00:00');
+            const dayLabel = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'numeric', day: 'numeric' });
+            grid.innerHTML += `
+                <div class="day-card">
+                    <span style="font-weight:600; font-size:0.85rem;">${dayLabel}</span>
+                    <span style="font-size: 1.8rem;">${getIcon(w.daily.weather_code[i])}</span>
+                    <div>
+                        <span style="color:var(--green); font-weight:900;">${Math.round(w.daily.temperature_2m_max[i])}°</span>
+                        <span style="opacity:0.4; font-size:0.85rem; margin-left:5px;">${Math.round(w.daily.temperature_2m_min[i])}°</span>
+                    </div>
+                </div>`;
+        });
+
+        // 4. National Weather Service Points (Detailed Forecast & Hazards)
+        const pRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+        const pData = await pRes.json();
+
+        const fRes = await fetch(pData.properties.forecast);
+        const fData = await fRes.json();
+        document.getElementById('dispDetail').innerText = fData.properties.periods[0].detailedForecast;
+        document.getElementById('dispSummary').innerText = fData.properties.periods[0].shortForecast;
+
+        // Alerts Logic
+        const aRes = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
+        const aData = await aRes.json();
+        const hBtn = document.getElementById('hazardBtn');
+        
+        if (aData.features.length > 0) {
+            hBtn.innerHTML = "Hazards Active";
+            hBtn.style.color = "var(--accent-red)";
+            document.getElementById('bodyAlerts').innerHTML = aData.features.map(f => `
+                <div style="margin-bottom: 20px; border-left: 4px solid var(--accent-red); padding-left: 15px;">
+                    <h3 style="color: var(--accent-red);">${f.properties.event}</h3>
+                    <p>${f.properties.headline}</p>
+                </div>`).join('');
+        } else {
+            hBtn.innerHTML = "No Hazards";
+            hBtn.style.color = "var(--green)";
+        }
+
+    } catch (err) {
+        console.error("Refresh Error:", err);
+        document.getElementById('dispSummary').innerText = "OFFLINE";
+    }
+}
                 // 2. Ventusky Update (City View Zoom = 6)
                 document.getElementById('radarFrame').src = `https://www.ventusky.com/widget/?p=${lat};${lon};6&l=radar&m=icon`;
 
