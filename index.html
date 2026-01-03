@@ -281,7 +281,7 @@
                 const { latitude: lat, longitude: lon } = geo.places[0];
                 
                 // CENTERED ON MANCHESTER COORDINATES
-                document.getElementById('radarFrame').src = `https://www.rainviewer.com/map.html?loc=${lat},${lon},9&control=1&map=1&type=1&_=${Date.now()}`;
+                document.getElementById('radarFrame').src = `https://www.rainviewer.com/map.html?loc=42.99,-71.45,10&control=1&map=1&type=1&_=${Date.now()}`;
 
                 const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,visibility,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`).then(r => r.json());
                 
