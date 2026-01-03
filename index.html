@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Support5 - AI-Driven Project Management UI Demo">
+  <meta name="author" content="Shaun Fahey">
+  <title>Support5 Dashboard Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #020381 0%, #2874fc 100%);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { motion } = window['framer-motion'];
+
+    function Support5Dashboard() {
+      return (
+        <div className='min-h-screen text-white font-inter'>
+          <header className='flex justify-between items-center px-8 py-4 border-b border-white/10'>
+            <h1 className='text-2xl font-semibold tracking-tight'>Support5 Dashboard</h1>
+            <button className='bg-gradient-to-r from-blue-400 to-purple-500 text-white font-medium px-6 py-2 rounded-xl shadow-md hover:opacity-90 transition'>New Project</button>
+          </header>
+
+          <main className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6'>
+            {/* Project Management Panel */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+              <div className='bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl shadow-lg p-4'>
+                <h2 className='text-xl font-semibold text-cyan-300 mb-3'>Project Management</h2>
+                <input className='bg-white bg-opacity-20 border-none text-white placeholder-white/70 rounded-lg p-2 w-full' placeholder='Search projects...' />
+                <div className='space-y-2 mt-3'>
+                  {['Financial Dashboard Redesign', 'API Integration', 'UX Audit'].map((proj) => (
+                    <div key={proj} className='p-3 bg-white bg-opacity-10 rounded-lg hover:bg-white hover:bg-opacity-20 transition cursor-pointer'>{proj}</div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Interactive Workspace */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}>
+              <div className='bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl shadow-lg p-4'>
+                <h2 className='text-xl font-semibold text-green-300 mb-3'>Interactive Workspace</h2>
+                <div className='p-4 bg-white bg-opacity-5 rounded-lg min-h-[250px] text-white text-opacity-80'>
+                  Collaborative workspace content or whiteboard integration here.
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Smart Output Panel */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }}>
+              <div className='bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl shadow-lg p-4'>
+                <h2 className='text-xl font-semibold text-purple-300 mb-3'>Smart Output Panel</h2>
+                <div className='p-4 bg-white bg-opacity-5 rounded-lg text-white text-opacity-80 min-h-[250px]'>
+                  Intelligent results, analytics, or AI assistant output displayed here.
+                </div>
+              </div>
+            </motion.div>
+          </main>
+
+          <footer className='text-center py-6 text-white text-opacity-60 text-sm border-t border-white/10'>
+            © 2025 Support5 · Designed by Shaun Fahey
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<Support5Dashboard />);
+  </script>
+</body>
+</html>
