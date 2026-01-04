@@ -1,6 +1,9 @@
 
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stony's Weather Station | Pro Persistence Build</title>
@@ -269,7 +272,10 @@ body {
             <h3 style="margin-bottom:25px; text-transform:uppercase; letter-spacing:5px; font-size:0.9rem; opacity:0.6;"><i class="fa-solid fa-calendar-days" style="color:var(--green)"></i> 14-Day Outlook</h3>
             <div id="gridForecast" class="forecast-grid-container"></div>
         </div>
-        <div class="glass-tile radar-panel"><iframe id="radarFrame" src=""></iframe></div>
+        <div class="glass-tile radar-panel">
+  <div id="radarMap" style="width: 100%; height: 100%; border-radius: 25px;"></div>
+</div>
+
     </main>
 
     <div class="system-dock">
@@ -311,7 +317,33 @@ body {
             try {
                 const geo = await fetch(`https://api.zippopotam.us/us/${currentZip}`).then(r => r.json());
                 const { latitude: lat, longitude: lon } = geo.places[0];
-                document.getElementById('radarFrame').src = `https://www.rainviewer.com/map.html?loc=${lat},${lon},9&control=1&map=1&type=1&_=${Date.now()}`;
+                // Initialize map once
+if (!window.radarMap) {
+    window.radarMap = L.map('radarMap').setView([lat, lon], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(window.radarMap);
+}
+
+// Remove old radar layer if exists
+if (window.radarLayer) {
+    window.radarMap.removeLayer(window.radarLayer);
+}
+
+// Get radar tiles
+const timestamp = Math.floor(Date.now() / 60000) * 60;
+window.radarLayer = L.tileLayer(
+  `https://tilecache.rainviewer.com/v2/radar/${timestamp}/256/{z}/{x}/{y}/2/1_1.png`,
+  {
+    opacity: 0.6,
+    attribution: 'Radar by RainViewer'
+  }
+).addTo(window.radarMap);
+
+// Center map
+window.radarMap.setView([lat, lon], 8);
+
 
                 const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,visibility,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`).then(r => r.json());
                 
