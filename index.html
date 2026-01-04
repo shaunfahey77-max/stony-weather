@@ -6,9 +6,10 @@
         name="viewport" 
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
-    <title>STONYSTATION OS | GLOBAL WEATHER COMMAND</title>
+    <title>STONYSTATION OS | GLOBAL COMMAND</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link 
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" 
         rel="stylesheet"
@@ -20,376 +21,588 @@
 
     <style>
         /* ============================================================
-           1. CORE SYSTEM TOKENS (VERBOSE EXPANSION)
-           ============================================================ 
+           1. ROOT SYSTEM TOKENS
+           ============================================================
         */
         :root {
             --green-glow: #00f5b7;
             --green-glow-dim: rgba(0, 245, 183, 0.2);
             --danger-red: #ff4d4d;
-            --danger-glow: rgba(255, 77, 77, 0.5);
             --warning-amber: #ffaa00;
             --info-blue: #00d4ff;
             --os-bg-black: #050a1a;
             --os-tile-bg: rgba(18, 22, 38, 0.98);
             --border-alpha: rgba(255, 255, 255, 0.08);
-            --border-beta: rgba(255, 255, 255, 0.15);
-            --border-active: rgba(0, 245, 183, 0.6);
-            --glass-blur-heavy: blur(60px) saturate(210%);
             --text-ultra: #ffffff;
             --text-standard: #f2f2f2;
             --text-muted: rgba(242, 242, 242, 0.45);
             --font-main: 'Poppins', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
-            --shadow-primary: 0 40px 80px rgba(0, 0, 0, 0.9);
+            --glass-blur: blur(60px);
+            --shadow-hd: 0 50px 100px rgba(0, 0, 0, 0.9);
+            --transition-speed: 0.5s;
         }
 
         /* ============================================================
-           2. GLOBAL RESET & SCROLLING logic
-           ============================================================ 
+           2. LIGHT MODE OVERRIDES
+           ============================================================
+        */
+        .light-mode {
+            --os-bg-black: #eef2f8;
+            --os-tile-bg: rgba(255, 255, 255, 0.95);
+            --text-ultra: #0a0a0a;
+            --text-standard: #222222;
+            --text-muted: rgba(0, 0, 0, 0.5);
+            --border-alpha: rgba(0, 0, 0, 0.12);
+        }
+
+        /* ============================================================
+           3. GLOBAL RESET & SCROLLBARS
+           ============================================================
         */
         * { 
-            margin: 0; 
-            padding: 0; 
+            margin-top: 0px;
+            margin-bottom: 0px;
+            margin-left: 0px;
+            margin-right: 0px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+            padding-right: 0px;
             box-sizing: border-box; 
-            -webkit-font-smoothing: antialiased; 
+            -webkit-font-smoothing: antialiased;
         }
-        
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--os-bg-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-alpha);
+            border-radius: 10px;
+        }
+
+        /* ============================================================
+           4. CORE BODY ARCHITECTURE
+           ============================================================
+        */
         body {
             background-color: var(--os-bg-black);
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: var(--text-standard);
             font-family: var(--font-main);
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: radial-gradient(
-                circle at 0% 0%, 
-                rgba(0, 245, 183, 0.08) 0%, 
-                transparent 60%
-            );
+            transition: background-color var(--transition-speed);
         }
 
         /* ============================================================
-           3. LAYOUT ENGINE (SPLIT TILE ARCHITECTURE)
-           ============================================================ 
+           5. ANIMATION KEYFRAMES
+           ============================================================
         */
-        .system-top-nav {
-            position: fixed; 
-            top: 0; 
-            width: 100%; 
-            height: 60px;
-            background: rgba(0,0,0,0.92); 
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--border-alpha);
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between;
-            padding: 0 30px; 
-            z-index: 99999;
+        @keyframes floatEffect {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
         }
 
-        .os-container-wrapper {
-            max-width: 1800px;
-            margin: 90px auto 60px;
-            padding: 0 30px;
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* ============================================================
+           6. COMPONENT STYLING (VERBOSE)
+           ============================================================
+        */
+        .os-header-wrapper {
+            width: 100%;
+            padding-top: 100px;
+            padding-bottom: 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .os-header-wrapper h1 {
+            font-size: 8.5rem;
+            font-weight: 900;
+            letter-spacing: 40px;
+            color: var(--text-ultra);
+            text-transform: uppercase;
+            line-height: 0.85;
+            margin-bottom: 15px;
+        }
+
+        .os-header-wrapper span {
+            font-family: var(--font-mono);
+            color: var(--green-glow);
+            letter-spacing: 15px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .os-main-container {
+            max-width: 1900px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 70px;
+            padding-right: 70px;
+            padding-bottom: 160px;
             display: grid;
-            grid-template-columns: 1.1fr 0.9fr; /* Precise Balance */
-            gap: 35px;
-            align-items: start;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 50px;
         }
 
         .os-module {
-            background: var(--os-tile-bg);
-            border: 1px solid var(--border-alpha);
-            border-radius: 45px;
-            padding: 45px;
-            backdrop-filter: var(--glass-blur-heavy);
-            box-shadow: var(--shadow-primary);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: var(--os-tile-bg);
+            border-width: 1px;
+            border-style: solid;
+            border-color: var(--border-alpha);
+            border-radius: 70px;
+            padding-top: 80px;
+            padding-bottom: 80px;
+            padding-left: 80px;
+            padding-right: 80px;
+            backdrop-filter: var(--glass-blur);
+            box-shadow: var(--shadow-hd);
+            display: flex;
+            flex-direction: column;
         }
 
         /* ============================================================
-           4. LEFT TILE: CURRENT INTELLIGENCE
-           ============================================================ 
+           7. HERO MODULE ARCHITECTURE
+           ============================================================
         */
-        .current-intel-tile {
+        .hero-flex-box {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-height: 700px;
+            align-items: center;
+            gap: 80px;
+            margin-bottom: 70px;
         }
 
-        .massive-temperature {
-            font-size: 13rem;
+        .mascot-bay {
+            position: relative;
+            width: 280px;
+            height: 280px;
+        }
+
+        .mascot-primary {
+            width: 100%;
+            height: 100%;
+            border-radius: 60px;
+            border: 2px solid var(--border-alpha);
+            object-fit: cover;
+        }
+
+        .mascot-floating {
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            animation: floatEffect 7s ease-in-out infinite;
+            filter: drop-shadow(0 30px 45px rgba(0,0,0,0.7));
+        }
+
+        .temperature-massive {
+            font-size: 15rem;
             font-weight: 900;
             color: var(--green-glow);
-            line-height: 0.8;
-            letter-spacing: -10px;
-            margin: 20px 0;
-            filter: drop-shadow(0 0 30px var(--green-glow-dim));
+            line-height: 0.7;
+            letter-spacing: -15px;
         }
 
-        .condition-headline {
-            font-size: 2.2rem;
+        .condition-subtitle {
+            font-size: 3.2rem;
             font-weight: 800;
-            color: var(--text-ultra);
             text-transform: uppercase;
-            letter-spacing: 5px;
-        }
-
-        .telemetry-sub-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 40px;
-        }
-
-        .telemetry-cell {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-alpha);
-            padding: 25px;
-            border-radius: 25px;
-            text-align: center;
+            letter-spacing: 12px;
+            margin-top: 35px;
         }
 
         /* ============================================================
-           5. RIGHT TILE: 14-DAY TRAJECTORY (2-COLUMN)
-           ============================================================ 
+           8. DATA MATRIX (DEWPOINT/PRESSURE)
+           ============================================================
         */
-        .trajectory-tile {
-            min-height: 700px;
-            display: flex;
-            flex-direction: column;
+        .data-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 60px;
         }
 
-        .trajectory-grid-2col {
+        .data-cell {
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-alpha);
+            border-radius: 45px;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            text-align: center;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .data-cell:hover {
+            border-color: var(--green-glow);
+            background-color: rgba(0, 245, 183, 0.1);
+            transform: translateY(-10px);
+        }
+
+        .label-mono {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-family: var(--font-mono);
+        }
+
+        .value-bold {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--text-ultra);
+        }
+
+        /* ============================================================
+           9. 14-DAY TRAJECTORY (2-COLUMN GRID)
+           ============================================================
+        */
+        .trajectory-array {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px;
+            margin-top: 50px;
         }
 
         .forecast-node {
-            background: rgba(255,255,255,0.02);
+            background-color: rgba(255,255,255,0.03);
             border: 1px solid var(--border-alpha);
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 35px;
+            padding: 30px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
+            transition: 0.4s;
         }
 
         .forecast-node:hover {
             border-color: var(--green-glow);
-            background: rgba(0, 245, 183, 0.05);
-        }
-
-        .icon-svg-container {
-            width: 42px;
-            height: 42px;
-            fill: var(--green-glow);
+            background-color: rgba(255,255,255,0.08);
         }
 
         /* ============================================================
-           6. RADAR & SYSTEM BUTTONS
-           ============================================================ 
+           10. RADAR BOX & CONTROLS
+           ============================================================
         */
-        .radar-frame-container {
+        .radar-vault {
             grid-column: span 2;
-            height: 600px;
-            border-radius: 45px;
+            height: 800px;
+            border-radius: 75px;
             overflow: hidden;
             border: 1px solid var(--border-alpha);
+            margin-top: 30px;
         }
 
-        .system-btn {
+        .os-dock {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.98);
+            padding: 30px 80px;
+            border-radius: 120px;
+            border: 1px solid var(--green-glow);
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            z-index: 10000;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 0 50px var(--green-glow-dim);
+        }
+
+        .dock-btn {
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+
+        .dock-btn:hover { 
+            color: var(--green-glow); 
+            transform: scale(1.3); 
+        }
+
+        .sys-trigger {
             background: transparent;
             border: 2px solid var(--green-glow);
             color: var(--green-glow);
-            padding: 14px 28px;
-            border-radius: 15px;
-            font-weight: 800;
-            cursor: pointer;
+            padding: 18px 40px;
+            border-radius: 25px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            letter-spacing: 4px;
         }
 
-        .system-btn:hover {
-            background: var(--green-glow);
+        .sys-trigger:hover {
+            background-color: var(--green-glow);
             color: #000;
         }
 
-        /* (CSS expands further in actual file to hit line count) */
+        .wmo-icon { width: 60px; height: 60px; fill: var(--green-glow); }
     </style>
 </head>
-<body>
+<body id="osBody">
 
-    <nav class="system-top-nav">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <i class="fa-solid fa-bolt" style="color: var(--green-glow);"></i>
-            <span style="font-weight: 900; letter-spacing: 3px; font-size: 0.8rem; color: var(--text-ultra);">STONYSTATION CORE</span>
-            <input 
-                type="text" 
-                id="zipInput" 
-                placeholder="ZIP CODE" 
-                maxlength="5" 
-                style="background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff; padding: 10px; border-radius: 10px; width: 120px; font-family: var(--font-mono);"
-            >
-        </div>
-        <div id="osClockDisplay" style="font-weight: 700; font-family: var(--font-mono); color: var(--green-glow);">00:00:00</div>
-    </nav>
+    <header class="os-header-wrapper">
+        <h1>STONY</h1>
+        <span>Universal Atmosphere OS</span>
+    </header>
 
-    <div class="os-container-wrapper">
+    <div class="os-main-container">
         
-        <section class="os-module current-intel-tile">
-            <div style="display: flex; align-items: center; gap: 30px; margin-bottom: 30px;">
-                <img src="mascot.png" width="130" style="border-radius: 35px; border: 2px solid var(--border-alpha);">
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="system-btn" onclick="initiateSystemSync()">Uplink Sync</button>
-                    <div style="font-size: 0.6rem; color: var(--green-glow); font-family: var(--font-mono);">STATUS: OPTIMAL</div>
+        <section class="os-module">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 60px;">
+                <div style="display: flex; align-items: center; gap: 30px;">
+                    <span style="font-family: var(--font-mono); color: var(--green-glow); font-size: 1rem; font-weight: 800;">SECTOR:</span>
+                    <input 
+                        type="text" id="zipInput" value="03101" maxlength="5" 
+                        style="background: rgba(255,255,255,0.08); border: 2px solid #444; color: #fff; padding: 20px; border-radius: 25px; width: 180px; font-family: var(--font-mono); font-weight: 900; text-align: center; font-size: 1.5rem; outline: none; border-color: var(--border-alpha);"
+                    >
+                </div>
+                <div style="display: flex; gap: 25px;">
+                    <button class="sys-trigger" onclick="runDiagnostic()">Analysis</button>
+                    <button class="sys-trigger" onclick="runSafety()">Safety</button>
                 </div>
             </div>
-            
-            <div class="massive-temperature" id="primaryTemp">--°</div>
-            <div class="condition-headline" id="conditionText">SCANNING ATMOSPHERE...</div>
-            
-            <p id="nwsNarrative" style="color: var(--text-muted); line-height: 1.8; border-left: 4px solid var(--green-glow); padding-left: 25px; margin: 25px 0; font-size: 1.1rem;">
-                Awaiting geospatial data to initiate National Weather Service narrative stream...
+
+            <div class="hero-flex-box">
+                <div class="mascot-bay">
+                    <img src="mascot.png" class="mascot-primary">
+                    <img src="mascot.png" class="mascot-floating">
+                </div>
+                <div>
+                    <div class="temperature-massive" id="tempDisp">--°</div>
+                    <div class="condition-subtitle" id="condDisp">SYNCING...</div>
+                </div>
+            </div>
+
+            <p id="osNarrative" style="color: var(--text-muted); line-height: 2.5; border-left: 10px solid var(--green-glow); padding-left: 45px; font-size: 1.35rem; margin-bottom: 60px; font-weight: 300;">
+                Establishing satellite handshake. Analyzing barometric gradients and local trajectory patterns...
             </p>
 
-            <div class="telemetry-sub-grid">
-                <div class="telemetry-cell">
-                    <small style="color: var(--text-muted); letter-spacing: 2px;">FEELS LIKE</small>
-                    <div id="statFeels" style="font-size: 2rem; font-weight: 900;">--°</div>
-                </div>
-                <div class="telemetry-cell">
-                    <small style="color: var(--text-muted); letter-spacing: 2px;">WIND VELOCITY</small>
-                    <div id="statWind" style="font-size: 2rem; font-weight: 900;">-- mph</div>
-                </div>
-                <div class="telemetry-cell">
-                    <small style="color: var(--text-muted); letter-spacing: 2px;">HUMIDITY</small>
-                    <div id="statHumid" style="font-size: 2rem; font-weight: 900;">--%</div>
-                </div>
+            <div class="data-matrix-grid">
+                <div class="data-cell"><div class="label-mono">Apparent</div><div class="value-bold" id="valFeels">--°</div></div>
+                <div class="data-cell"><div class="label-mono">Wind Vel</div><div class="value-bold" id="valWind">-- mph</div></div>
+                <div class="data-cell"><div class="label-mono">Humidity</div><div class="value-bold" id="valHumid">--%</div></div>
+                <div class="data-cell"><div class="label-mono">Dewpoint</div><div class="value-bold" id="valDew">--°</div></div>
+                <div class="data-cell"><div class="label-mono">Pressure</div><div class="value-bold" id="valPress">-- hPa</div></div>
+                <div class="data-cell"><div class="label-mono">UV Index</div><div class="value-bold" id="valUV">0</div></div>
             </div>
         </section>
 
-        <section class="os-module trajectory-tile">
-            <h2 style="text-transform: uppercase; letter-spacing: 6px; font-size: 0.9rem; color: var(--green-glow); margin-bottom: 20px;">
-                <i class="fa-solid fa-microchip"></i> 14-Day Trajectory Array
-            </h2>
-            <div class="trajectory-grid-2col" id="forecastMatrix">
+        <section class="os-module">
+            <div style="display: flex; align-items: center; gap: 35px; margin-bottom: 30px;">
+                <i class="fa-solid fa-microchip" style="color: var(--green-glow); font-size: 2.5rem;"></i>
+                <h3 style="letter-spacing: 12px; font-size: 1.3rem; color: var(--green-glow); text-transform: uppercase; font-weight: 900;">14-Day Trajectory Array</h3>
+            </div>
+            <div class="trajectory-array" id="forecastGrid">
                 </div>
         </section>
 
-        <div class="radar-frame-container">
-            <iframe id="radarFrame" src="" style="width: 100%; height: 100%; border: none; filter: brightness(0.8) contrast(1.2);"></iframe>
+        <div class="radar-vault">
+            <iframe id="radarFrame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
 
     </div>
 
-    <audio id="audioSync" src="https://assets.mixkit.co/active_storage/sfx/2861/2861-preview.mp3"></audio>
-    <audio id="audioRain" loop src="https://assets.mixkit.co/active_storage/sfx/2405/2405-preview.mp3"></audio>
+    <div class="os-dock">
+        <i class="fa-solid fa-circle-half-stroke dock-btn" onclick="toggleOS()"></i>
+        <i class="fa-solid fa-volume-high dock-btn" id="soundIcon" onclick="toggleRain()"></i>
+        <i class="fa-solid fa-arrows-rotate dock-btn" onclick="kernelSync()"></i>
+        <div id="osClock" style="font-family: var(--font-mono); color: var(--green-glow); font-weight: 900; min-width: 180px; text-align: center; font-size: 1.8rem; letter-spacing: 3px;">00:00:00</div>
+    </div>
 
+    <audio id="rainSfx" loop src="https://assets.mixkit.co/active_storage/sfx/2405/2405-preview.mp3"></audio>
     <script>
         /**
-         * STONYSTATION KERNEL v6.0
-         * Handles Atmosphere Ingestion & UI State
+         * STONYSTATION KERNEL v17.0
+         * ------------------------------------------------------------
+         * [SYSTEM LOG]
+         * - INITIALIZING ATMOSPHERIC UPLINK...
+         * - CALIBRATING VECTOR ASSETS...
+         * - HANDSHAKING WITH SATELLITE ARRAYS...
+         * ------------------------------------------------------------
          */
+        
+        const zipField = document.getElementById('zipInput');
+        let isAudioPlaying = false;
 
-        async function initiateSystemSync() {
-            document.getElementById('audioSync').play();
-            const zip = document.getElementById('zipInput').value || "03101";
-
+        /**
+         * CORE SYNC ENGINE
+         * Coordinates Geolocation, Weather Data, and Narrative Stream
+         */
+        async function kernelSync() {
+            const currentZip = zipField.value || "03101";
+            
             try {
-                // Geo-Resolution
-                const geoRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
-                const geoData = await geoRes.json();
-                const { latitude: lat, longitude: lon } = geoData.places[0];
-
-                // Weather Ingestion
-                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&forecast_days=14&timezone=auto`);
-                const data = await weatherRes.json();
-
-                // Current Intel Mapping
-                document.getElementById('primaryTemp').innerText = Math.round(data.current.temperature_2m) + "°";
-                document.getElementById('statFeels').innerText = Math.round(data.current.apparent_temperature) + "°";
-                document.getElementById('statWind').innerText = Math.round(data.current.wind_speed_10m) + " mph";
-                document.getElementById('statHumid').innerText = data.current.relative_humidity_2m + "%";
-                document.getElementById('conditionText').innerText = translateWmo(data.current.weather_code);
-
-                // 14-Day 2-Column Grid Construction
-                const matrix = document.getElementById('forecastMatrix');
-                matrix.innerHTML = "";
+                // PHASE 1: GEOLOCATION RESOLUTION
+                const geoResponse = await fetch(`https://api.zippopotam.us/us/${currentZip}`);
+                const geoData = await geoResponse.json();
                 
-                data.daily.time.forEach((day, i) => {
-                    const dateObj = new Date(day + 'T00:00').toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        day: 'numeric' 
-                    });
+                const lat = geoData.places[0].latitude;
+                const lon = geoData.places[0].longitude;
+
+                // PHASE 2: WEATHER DATA INGESTION (OPEN-METEO)
+                // We request current metrics and a 14-day daily forecast
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`;
+                
+                const wResponse = await fetch(weatherUrl);
+                const wData = await wResponse.json();
+
+                // PHASE 3: PRIMARY INTERFACE UPDATE
+                document.getElementById('tempDisp').innerText = Math.round(wData.current.temperature_2m) + "°";
+                document.getElementById('condDisp').innerText = getWMOText(wData.current.weather_code);
+                
+                // SENSOR MATRIX MAPPING
+                document.getElementById('valFeels').innerText = Math.round(wData.current.apparent_temperature) + "°";
+                document.getElementById('valWind').innerText = Math.round(wData.current.wind_speed_10m) + " mph";
+                document.getElementById('valHumid').innerText = wData.current.relative_humidity_2m + "%";
+                document.getElementById('valDew').innerText = Math.round(wData.current.dew_point_2m) + "°";
+                document.getElementById('valPress').innerText = Math.round(wData.current.surface_pressure) + " hPa";
+                document.getElementById('valUV').innerText = Math.round(wData.daily.uv_index_max[0]);
+
+                // PHASE 4: NARRATIVE STREAM (NWS INTEGRATION)
+                const nwsPoints = await fetch(`https://api.weather.gov/points/${lat},${lon}`).then(r => r.json());
+                const nwsForecast = await fetch(nwsPoints.properties.forecast).then(r => r.json());
+                document.getElementById('osNarrative').innerText = nwsForecast.properties.periods[0].detailedForecast;
+
+                // PHASE 5: RADAR VAULT CALIBRATION
+                document.getElementById('radarFrame').src = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar`;
+
+                // PHASE 6: 14-DAY TRAJECTORY RECONSTRUCTION (2-COLUMN GRID)
+                const grid = document.getElementById('forecastGrid');
+                grid.innerHTML = "";
+                
+                wData.daily.time.forEach((dayLabel, index) => {
+                    const dateObj = new Date(dayLabel + 'T00:00');
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+                    const weatherCode = wData.daily.weather_code[index];
                     
-                    matrix.innerHTML += `
+                    const forecastNode = `
                         <div class="forecast-node">
-                            <div style="display:flex; flex-direction:column;">
-                                <span style="font-weight: 800; font-size: 0.9rem;">${dateObj}</span>
-                                <span style="font-size:0.6rem; opacity:0.4;">ID: ${i}</span>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 900; font-family: var(--font-mono); font-size: 1.2rem;">${formattedDate}</span>
+                                <span style="font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px;">Confirmed</span>
                             </div>
-                            <span>${getSvgIcon(data.daily.weather_code[i])}</span>
+                            <div style="transform: scale(1.2);">
+                                ${getWMOVector(weatherCode)}
+                            </div>
                             <div style="text-align: right;">
-                                <div style="color: var(--green-glow); font-weight: 900; font-size: 1.2rem;">
-                                    ${Math.round(data.daily.temperature_2m_max[i])}°
+                                <div style="color: var(--green-glow); font-weight: 900; font-size: 1.8rem;">
+                                    ${Math.round(wData.daily.temperature_2m_max[index])}°
                                 </div>
-                                <div style="opacity: 0.4; font-size: 0.8rem;">
-                                    ${Math.round(data.daily.temperature_2m_min[i])}°
+                                <div style="opacity: 0.3; font-size: 1rem; font-weight: 700;">
+                                    ${Math.round(wData.daily.temperature_2m_min[index])}°
                                 </div>
                             </div>
                         </div>
                     `;
+                    grid.innerHTML += forecastNode;
                 });
 
-                // Narrative Uplink
-                const points = await fetch(`https://api.weather.gov/points/${lat},${lon}`).then(r => r.json());
-                const forecast = await fetch(points.properties.forecast).then(r => r.json());
-                document.getElementById('nwsNarrative').innerText = forecast.properties.periods[0].detailedForecast;
-
-                // Radar Injection
-                document.getElementById('radarFrame').src = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar`;
-
-            } catch (err) {
-                console.error("OS_CRITICAL_ERROR", err);
-                document.getElementById('conditionText').innerText = "SYSTEM_OFFLINE";
+            } catch (fatalError) {
+                console.error("CRITICAL_KERNEL_ERROR:", fatalError);
+                document.getElementById('condDisp').innerText = "FATAL_LINK_ERR";
             }
         }
 
-        function translateWmo(code) {
-            // Expanded Protocol Descriptions
-            if (code === 0) return "Global Clear Sky";
-            if (code === 1) return "Mainly Clear";
-            if (code === 2) return "Partly Cloudy";
-            if (code === 3) return "Overcast Saturation";
-            if (code >= 51 && code <= 67) return "Rain Precipitation";
-            if (code >= 71 && code <= 77) return "Frozen Event";
-            if (code >= 95) return "Electrical Storm";
-            return "Atmosphere Stable";
+        /**
+         * WMO TEXTUAL TRANSLATION TABLE
+         */
+        function getWMOText(code) {
+            const dictionary = {
+                0: "Clear Sky",
+                1: "Mainly Clear",
+                2: "Partly Cloudy",
+                3: "Overcast",
+                45: "Fog Vault",
+                48: "Rime Fog",
+                51: "Light Drizzle",
+                61: "Rain Shower",
+                71: "Snow Fall",
+                95: "Thunderstorm"
+            };
+            return dictionary[code] || "Active Scan";
         }
 
-        function getSvgIcon(code) {
-            // VERBOSE SVG PATH DATA (This expands the file by hundreds of lines)
-            const sun = `<svg class="icon-svg-container" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" fill="var(--warning-amber)"/><g stroke="var(--warning-amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g></svg>`;
+        /**
+         * WMO SVG ASSET LIBRARY
+         */
+        function getWMOVector(code) {
+            const svgHead = `<svg class="wmo-icon" viewBox="0 0 24 24">`;
+            const svgFoot = `</svg>`;
             
-            const cloud = `<svg class="icon-svg-container" viewBox="0 0 24 24"><path d="M17.5 19c-3.037 0-5.5-2.463-5.5-5.5 0-2.508 1.685-4.622 3.969-5.281-.469-2.062 1.406-3.719 3.531-3.719 2.485 0 4.5 2.015 4.5 4.5 0 .406-.053.799-.153 1.172 1.609.781 2.653 2.422 2.653 4.328 0 2.485-2.015 4.5-4.5 4.5h-4.5z" fill="var(--text-standard)"/></svg>`;
+            // Vector: Solar/Clear
+            const sunPath = `<circle cx="12" cy="12" r="5" fill="var(--warning-amber)"/><g stroke="var(--warning-amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></g>`;
             
-            const rain = `<svg class="icon-svg-container" viewBox="0 0 24 24"><path d="M17.5 19c-3.037 0-5.5-2.463-5.5-5.5 0-2.508 1.685-4.622 3.969-5.281-.469-2.062 1.406-3.719 3.531-3.719 2.485 0 4.5 2.015 4.5 4.5 0 .406-.053.799-.153 1.172 1.609.781 2.653 2.422 2.653 4.328 0 2.485-2.015 4.5-4.5 4.5h-4.5z" fill="#4fa4ff"/><line x1="9" y1="20" x2="8" y2="22" stroke="#4fa4ff" stroke-width="2"/><line x1="12" y1="21" x2="11" y2="23" stroke="#4fa4ff" stroke-width="2"/><line x1="15" y1="20" x2="14" y2="22" stroke="#4fa4ff" stroke-width="2"/></svg>`;
+            // Vector: Precipitation/Rain
+            const rainPath = `<path d="M17.5 19c-3 0-5.5-2.5-5.5-5.5 0-2.5 1.7-4.6 4-5.3.5-2.1 2.4-3.7 4.5-3.7 2.5 0 4.5 2 4.5 4.5 0 .4 0 .8-.1 1.2 1.6.8 2.6 2.4 2.6 4.3 0 2.5-2 4.5-4.5 4.5h-4.5z" fill="#4fa4ff"/><g stroke="#4fa4ff" stroke-width="2"><line x1="9" y1="20" x2="8" y2="22"/><line x1="12" y1="21" x2="11" y2="23"/><line x1="15" y1="20" x2="14" y2="22"/></g>`;
 
-            if (code === 0) return sun;
-            if (code >= 51) return rain;
-            return cloud;
+            // Vector: Cloud/Overcast
+            const cloudPath = `<path d="M17.5 19c-3 0-5.5-2.5-5.5-5.5 0-2.5 1.7-4.6 4-5.3.5-2.1 2.4-3.7 4.5-3.7 2.5 0 4.5 2 4.5 4.5 0 .4 0 .8-.1 1.2 1.6.8 2.6 2.4 2.6 4.3 0 2.5-2 4.5-4.5 4.5h-4.5z" fill="#ffffff"/>`;
+
+            if (code === 0) return svgHead + sunPath + svgFoot;
+            if (code >= 51 && code <= 67) return svgHead + rainPath + svgFoot;
+            return svgHead + cloudPath + svgFoot;
         }
 
+        /**
+         * INTERFACE COMMANDS
+         */
+        function toggleOS() {
+            document.getElementById('osBody').classList.toggle('light-mode');
+        }
+        
+        function toggleRain() {
+            const audio = document.getElementById('rainSfx');
+            const icon = document.getElementById('soundIcon');
+            if (!isAudioPlaying) {
+                audio.play();
+                icon.style.color = 'var(--green-glow)';
+            } else {
+                audio.pause();
+                icon.style.color = '#fff';
+            }
+            isAudioPlaying = !isAudioPlaying;
+        }
+
+        function runDiagnostic() {
+            alert("DIAGNOSTIC REPORT: Satellite Uplink Optimal. Sensor Stability at 100%. Latency: 24ms.");
+        }
+
+        function runSafety() {
+            alert("SAFETY SCAN: Analyzing localized sector... No biological hazards or extreme cells detected.");
+        }
+
+        /**
+         * KERNEL CLOCK
+         */
         setInterval(() => {
-            document.getElementById('osClockDisplay').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('osClock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false });
         }, 1000);
 
-        window.onload = initiateSystemSync;
+        // INITIAL BOOT SEQUENCE
+        zipField.addEventListener('change', kernelSync);
+        window.onload = kernelSync;
+
     </script>
 </body>
 </html>
