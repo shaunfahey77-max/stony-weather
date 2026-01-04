@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STONYSTATION OS | GLOBAL ATMOSPHERE</title>
+    <title>STONYSTATION OS | V5.0 RECOVERY</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
@@ -13,269 +13,204 @@
         :root {
             --green: #00f5b7;
             --bg: #050a1a;
-            --tile: rgba(18, 22, 38, 0.7);
+            --tile: rgba(25, 30, 45, 0.7);
             --text: #ffffff;
-            --muted: rgba(255,255,255,0.5);
+            --muted: rgba(255,255,255,0.4);
             --border: rgba(255,255,255,0.1);
             --danger: #ff4d4d;
+            --warning: #ffaa00;
         }
 
-        .light-mode {
-            --bg: #eef2f8;
-            --tile: rgba(255, 255, 255, 0.8);
-            --text: #0a0a0a;
-            --muted: rgba(0,0,0,0.5);
-            --border: rgba(0,0,0,0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: var(--bg) url('background.png') no-repeat center center fixed;
             background-size: cover;
             color: var(--text);
             font-family: 'Poppins', sans-serif;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* HEADER */
-        .os-header { text-align: center; padding: 80px 20px 40px; position: relative; }
-        .os-header h1 { font-size: clamp(3rem, 10vw, 8rem); font-weight: 900; letter-spacing: 20px; text-transform: uppercase; line-height: 1; }
-        .os-header span { font-family: 'JetBrains Mono'; font-size: 0.9rem; letter-spacing: 8px; color: var(--green); display: block; margin-top: 15px; opacity: 0.8; }
+        .os-header { text-align: center; padding: 40px 20px 10px; }
+        .os-header h1 { font-size: clamp(2rem, 8vw, 6rem); font-weight: 900; letter-spacing: 20px; text-transform: uppercase; }
 
-        /* HAZARD BANNER */
-        #hazardBanner { display: none; background: var(--danger); color: white; padding: 20px; text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        /* GRID SYSTEM */
+        .os-wrapper { max-width: 1800px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
 
-        /* GRID */
-        .os-container { max-width: 1700px; margin: 0 auto; padding: 20px 40px 150px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; }
-
-        .os-tile { 
+        .os-panel { 
             background: var(--tile); 
-            backdrop-filter: blur(50px); 
-            -webkit-backdrop-filter: blur(50px);
+            backdrop-filter: blur(30px); 
             border: 1px solid var(--border); 
-            border-radius: 50px; 
-            padding: 60px; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
+            border-radius: 40px; 
+            padding: 40px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        /* CURRENT CONDITIONS */
-        .hero-row { display: flex; align-items: center; gap: 50px; margin: 40px 0; }
-        .mascot-frame { width: 240px; height: 240px; border-radius: 40px; overflow: hidden; border: 2px solid var(--border); background: rgba(0,0,0,0.2); }
-        .mascot-frame img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .temp-main { font-size: clamp(6rem, 13vw, 13rem); font-weight: 900; color: var(--green); line-height: 0.8; letter-spacing: -10px; }
-        .condition-text { font-size: 2.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 6px; margin-top: 20px; }
-
-        /* INPUTS */
-        .sector-box { 
-            background: rgba(128,128,128,0.15); 
-            border: 2px solid var(--border); 
-            padding: 15px 25px; 
-            border-radius: 20px; 
-            color: var(--text); 
+        /* BUTTONS & CONTROLS */
+        .btn-group { display: flex; gap: 15px; }
+        .os-btn { 
+            padding: 10px 20px; 
+            border-radius: 12px; 
+            font-weight: 800; 
             font-family: 'JetBrains Mono'; 
-            font-size: 1.4rem; 
-            width: 160px; 
-            text-align: center; 
+            cursor: pointer; 
+            border: none;
             transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.8rem;
         }
-        .sector-box:focus { border-color: var(--green); outline: none; background: rgba(128,128,128,0.25); }
+        .btn-analysis { background: var(--green); color: #000; }
+        .btn-hazard { background: #333; color: #fff; }
+        .btn-hazard.active-alert { background: var(--danger); animation: pulse 2s infinite; }
 
-        /* SENSOR GRID */
-        .sensor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 50px; }
-        .sensor-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 30px; padding: 35px 20px; text-align: center; transition: 0.3s; }
-        .sensor-card:hover { transform: translateY(-5px); border-color: var(--green); }
-        .sensor-card label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); margin-bottom: 15px; font-weight: 700; }
-        .sensor-card span { font-size: 2.2rem; font-weight: 900; font-family: 'JetBrains Mono'; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* OUTLOOK */
-        .outlook-list { display: flex; flex-direction: column; gap: 15px; height: 750px; overflow-y: auto; padding-right: 15px; margin-top: 30px; }
-        .outlook-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 25px 35px; border-radius: 30px; border: 1px solid var(--border); transition: 0.3s; }
-        .outlook-item:hover { background: rgba(255,255,255,0.08); border-color: var(--green); }
+        /* HERO AREA */
+        .hero-layout { display: flex; align-items: center; gap: 30px; margin: 30px 0; }
+        .mascot-frame { width: 200px; height: 200px; border-radius: 30px; overflow: hidden; border: 1px solid var(--border); }
+        .mascot-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .temp-val { font-size: 8rem; font-weight: 900; color: var(--green); line-height: 1; letter-spacing: -5px; }
 
-        /* RADAR */
-        .radar-frame { grid-column: span 2; height: 700px; border-radius: 60px; overflow: hidden; border: 1px solid var(--border); position: relative; pointer-events: none; }
-        .radar-frame.active { pointer-events: auto; }
-        .radar-overlay { position: absolute; top: 25px; right: 25px; background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; color: var(--green); border: 1px solid var(--green); }
+        /* 14-DAY GRID (TWO COLUMNS) */
+        .outlook-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .outlook-day { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(255,255,255,0.03); padding: 12px 20px; 
+            border-radius: 15px; border: 1px solid var(--border); 
+        }
+
+        /* RADAR - NO BLOCKING LAYER */
+        .radar-container { grid-column: span 2; height: 600px; border-radius: 40px; overflow: hidden; border: 1px solid var(--border); background: #000; }
+
+        /* SENSOR MATRIX */
+        .sensor-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
+        .sensor-box { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid var(--border); }
+        .sensor-box label { display: block; font-size: 0.6rem; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+        .sensor-box span { font-size: 1.5rem; font-weight: 800; font-family: 'JetBrains Mono'; }
 
         /* DOCK */
-        .os-dock { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.95); padding: 20px 50px; border-radius: 100px; display: flex; align-items: center; gap: 50px; z-index: 10000; border: 1px solid var(--green); box-shadow: 0 0 50px rgba(0, 245, 183, 0.2); }
-        .dock-btn { font-size: 1.8rem; color: #fff; cursor: pointer; transition: 0.3s; }
-        .dock-btn:hover { color: var(--green); transform: scale(1.1); }
+        .os-dock { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); padding: 15px 40px; border-radius: 50px; display: flex; align-items: center; gap: 40px; z-index: 1000; border: 1px solid var(--green); }
 
-        /* MOBILE */
-        @media (max-width: 1100px) {
-            .os-container { grid-template-columns: 1fr; padding: 20px; }
-            .radar-frame { grid-column: span 1; height: 500px; }
-            .hero-row { flex-direction: column; text-align: center; }
-            .sensor-grid { grid-template-columns: repeat(2, 1fr); }
-            .os-tile { padding: 40px; }
-        }
+        @media (max-width: 1000px) { .os-wrapper { grid-template-columns: 1fr; } .radar-container { grid-column: span 1; } .outlook-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body id="osBody">
+<body>
 
-    <div id="hazardBanner">CRITICAL WEATHER ALERT ACTIVE</div>
+    <header class="os-header"><h1>STONY</h1></header>
 
-    <header class="os-header">
-        <h1>STONY <i class="fa-solid fa-cloud-sun-rain" style="color: var(--green); font-size: 0.5em;"></i></h1>
-        <span>UNIVERSAL ATMOSPHERE OS v4.0</span>
-    </header>
-
-    <div class="os-container">
-        
-        <div class="os-tile">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <label style="font-size: 0.7rem; font-weight: 800; color: var(--green); letter-spacing: 3px; display: block; margin-bottom: 10px;">SECTOR_ID</label>
-                    <input type="text" id="zipInput" value="03101" class="sector-box" maxlength="5">
-                </div>
-                <div style="display: flex; gap: 15px;">
-                    <button onclick="runDiag()" style="background: var(--green); color: black; border: none; padding: 12px 25px; border-radius: 15px; font-weight: 900; cursor: pointer; font-family: 'JetBrains Mono';">ANALYSIS</button>
+    <div class="os-wrapper">
+        <div class="os-panel">
+            <div style="display: flex; justify-content: space-between;">
+                <input type="text" id="zipInput" value="03101" style="background:none; border:1px solid var(--border); color:#fff; padding:10px; border-radius:10px; width:100px; font-family:'JetBrains Mono';">
+                <div class="btn-group">
+                    <button class="os-btn btn-analysis" onclick="alert('System Diagnostics: Nominal')">Analysis</button>
+                    <button id="hazardBtn" class="os-btn btn-hazard" onclick="viewAlerts()">Advisories</button>
                 </div>
             </div>
 
-            <div class="hero-row">
-                <div class="mascot-frame">
-                    <img src="mascot.png" alt="Jerry">
-                </div>
+            <div class="hero-layout">
+                <div class="mascot-frame"><img src="mascot.png"></div>
                 <div>
-                    <div class="temp-main" id="tempDisp">--°</div>
-                    <div class="condition-text" id="condDisp">UPLINKING...</div>
+                    <div class="temp-val" id="tempDisp">--°</div>
+                    <div style="font-weight: 800; text-transform: uppercase; letter-spacing: 4px;" id="condDisp">Uplinking...</div>
                 </div>
             </div>
 
-            <p id="narrativeDisp" style="margin-top: 20px; font-size: 1.2rem; line-height: 2; color: var(--muted); border-left: 5px solid var(--green); padding-left: 30px; font-weight: 300;">
-                Establishing encrypted handshake with NWS high-altitude telemetry...
-            </p>
+            <div id="narrativeDisp" style="font-size: 0.95rem; line-height: 1.6; color: var(--muted); border-left: 3px solid var(--green); padding-left: 20px; margin-bottom: 20px;">
+                Handshaking with NOAA NWS Discussion...
+            </div>
 
-            <div class="sensor-grid">
-                <div class="sensor-card"><label>Apparent</label><span id="valFeels">--</span></div>
-                <div class="sensor-card"><label>Wind Speed</label><span id="valWind">--</span></div>
-                <div class="sensor-card"><label>Humidity</label><span id="valHumid">--</span></div>
-                <div class="sensor-card"><label>Dewpoint</label><span id="valDew">--</span></div>
-                <div class="sensor-card"><label>Pressure</label><span id="valPress">--</span></div>
-                <div class="sensor-card"><label>UV Index</label><span id="valUV">--</span></div>
+            <div class="sensor-matrix">
+                <div class="sensor-box"><label>Apparent</label><span id="valFeels">--</span></div>
+                <div class="sensor-box"><label>Wind</label><span id="valWind">--</span></div>
+                <div class="sensor-box"><label>Humidity</label><span id="valHumid">--</span></div>
+                <div class="sensor-box"><label>Dewpoint</label><span id="valDew">--</span></div>
+                <div class="sensor-box"><label>Pressure</label><span id="valPress">--</span></div>
+                <div class="sensor-box"><label>UV Index</label><span id="valUV">--</span></div>
             </div>
         </div>
 
-        <div class="os-tile">
-            <h3 style="letter-spacing: 8px; font-weight: 900; color: var(--green); text-transform: uppercase;">14-Day Extended Outlook</h3>
-            <div class="outlook-list" id="outlookGrid"></div>
+        <div class="os-panel">
+            <h3 style="letter-spacing: 5px; color: var(--green); text-transform: uppercase; font-size: 0.9rem; margin-bottom: 20px;">14-Day Trajectory Array</h3>
+            <div class="outlook-grid" id="outlookGrid"></div>
         </div>
 
-        <div class="radar-frame" id="radarContainer" onclick="this.classList.add('active')">
-            <div class="radar-overlay">RADAR LOCKED | CLICK TO ENGAGE</div>
+        <div class="radar-container">
             <iframe id="radarIframe" style="width: 100%; height: 100%; border: none;"></iframe>
         </div>
-
     </div>
 
     <div class="os-dock">
-        <i class="fa-solid fa-circle-half-stroke dock-btn" onclick="toggleMode()"></i>
-        <i class="fa-solid fa-volume-high dock-btn" id="audioBtn" onclick="toggleAudio()"></i>
-        <i class="fa-solid fa-arrows-rotate dock-btn" onclick="syncKernel()"></i>
-        <div id="osTime" style="font-family: 'JetBrains Mono'; font-weight: 800; color: var(--green); font-size: 1.8rem; letter-spacing: 3px;">00:00:00</div>
+        <i class="fa-solid fa-arrows-rotate" style="color:#fff; cursor:pointer;" onclick="syncOS()"></i>
+        <div id="clock" style="font-family: 'JetBrains Mono'; font-weight: 800; color: var(--green); font-size: 1.2rem;">00:00:00</div>
     </div>
 
     <script>
-        const zipInput = document.getElementById('zipInput');
-        let audioActive = false;
-        const rainSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2405/2405-preview.mp3');
-        rainSfx.loop = true;
+        let activeAlertUrl = "";
 
-        async function syncKernel() {
-            const zip = zipInput.value || "03101";
+        async function syncOS() {
+            const zip = document.getElementById('zipInput').value || "03101";
             try {
-                // 1. GEO
-                const geoRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
-                const geoData = await geoRes.json();
-                const lat = geoData.places[0].latitude;
-                const lon = geoData.places[0].longitude;
-                const state = geoData.places[0]['state abbreviation'];
+                const geo = await (await fetch(`https://api.zippopotam.us/us/${zip}`)).json();
+                const lat = geo.places[0].latitude;
+                const lon = geo.places[0].longitude;
+                const state = geo.places[0]['state abbreviation'];
 
-                // 2. WEATHER & OUTLOOK
-                const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,dew_point_2m,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`);
-                const wData = await wRes.json();
+                // 1. Weather Data
+                const weather = await (await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,surface_pressure,dew_point_2m,uv_index&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`)).json();
 
-                // 3. NWS DATA (NARRATIVE & ALERTS)
-                const pointsRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
-                const pointsData = await pointsRes.json();
-                const forecastRes = await fetch(pointsData.properties.forecast);
-                const forecastData = await forecastRes.json();
-                
-                document.getElementById('narrativeDisp').innerText = forecastData.properties.periods[0].detailedForecast;
+                // 2. NWS Discussion & Hazards
+                const points = await (await fetch(`https://api.weather.gov/points/${lat},${lon}`)).json();
+                const forecast = await (await fetch(points.properties.forecast)).json();
+                document.getElementById('narrativeDisp').innerText = forecast.properties.periods[0].detailedForecast;
 
-                const alertRes = await fetch(`https://api.weather.gov/alerts/active?area=${state}`);
-                const alertData = await alertRes.json();
-                const banner = document.getElementById('hazardBanner');
-                if (alertData.features.length > 0) {
-                    banner.innerText = `ALERT: ${alertData.features[0].properties.headline}`;
-                    banner.style.display = 'block';
-                } else { banner.style.display = 'none'; }
+                const alerts = await (await fetch(`https://api.weather.gov/alerts/active?area=${state}`)).json();
+                const hazardBtn = document.getElementById('hazardBtn');
+                if (alerts.features.length > 0) {
+                    hazardBtn.classList.add('active-alert');
+                    hazardBtn.innerText = "Advisories (!)";
+                    activeAlertUrl = alerts.features[0].properties.affectedZones[0];
+                } else {
+                    hazardBtn.classList.remove('active-alert');
+                    hazardBtn.innerText = "Advisories";
+                }
 
-                // UI UPDATE
-                document.getElementById('tempDisp').innerText = Math.round(wData.current.temperature_2m) + "°";
-                document.getElementById('condDisp').innerHTML = `<i class="${getIcon(wData.current.weather_code)}"></i> ${getConditionText(wData.current.weather_code)}`;
-                document.getElementById('valFeels').innerText = Math.round(wData.current.apparent_temperature) + "°";
-                document.getElementById('valWind').innerText = Math.round(wData.current.wind_speed_10m) + " mph";
-                document.getElementById('valHumid').innerText = wData.current.relative_humidity_2m + "%";
-                document.getElementById('valDew').innerText = Math.round(wData.current.dew_point_2m) + "°";
-                document.getElementById('valPress').innerText = Math.round(wData.current.surface_pressure) + " hPa";
-                document.getElementById('valUV').innerText = Math.round(wData.current.uv_index || 0);
+                // Update UI
+                document.getElementById('tempDisp').innerText = Math.round(weather.current.temperature_2m) + "°";
+                document.getElementById('condDisp').innerText = "Conditions Nominal";
+                document.getElementById('valFeels').innerText = Math.round(weather.current.apparent_temperature) + "°";
+                document.getElementById('valWind').innerText = Math.round(weather.current.wind_speed_10m) + "mph";
+                document.getElementById('valHumid').innerText = weather.current.relative_humidity_2m + "%";
+                document.getElementById('valDew').innerText = Math.round(weather.current.dew_point_2m) + "°";
+                document.getElementById('valPress').innerText = Math.round(weather.current.surface_pressure) + "hPa";
+                document.getElementById('valUV').innerText = Math.round(weather.current.uv_index || 0);
 
-                // RADAR
+                // Radar
                 document.getElementById('radarIframe').src = `https://embed.ventusky.com/?p=${lat};${lon};6&l=radar`;
 
-                // OUTLOOK
+                // 14-Day Grid
                 const grid = document.getElementById('outlookGrid');
                 grid.innerHTML = "";
-                wData.daily.time.forEach((day, i) => {
+                weather.daily.time.forEach((day, i) => {
                     const d = new Date(day + 'T00:00');
                     grid.innerHTML += `
-                        <div class="outlook-item">
-                            <div style="flex: 1; font-family: 'JetBrains Mono'; font-weight: 800;">${d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</div>
-                            <div style="flex: 1; text-align: center; color: var(--green); font-size: 1.5rem;"><i class="${getIcon(wData.daily.weather_code[i])}"></i></div>
-                            <div style="flex: 1; text-align: right;">
-                                <span style="font-weight: 900; font-size: 1.4rem;">${Math.round(wData.daily.temperature_2m_max[i])}°</span>
-                                <span style="margin-left: 10px; opacity: 0.3;">${Math.round(wData.daily.temperature_2m_min[i])}°</span>
-                            </div>
+                        <div class="outlook-day">
+                            <span class="day-label">${d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}</span>
+                            <span style="font-weight:900; color:var(--green);">${Math.round(weather.daily.temperature_2m_max[i])}°</span>
                         </div>`;
                 });
-            } catch (e) { console.error(e); }
+
+            } catch (e) { console.error("Sync Error", e); }
         }
 
-        function getIcon(c) {
-            if (c === 0) return "fa-solid fa-sun";
-            if (c <= 3) return "fa-solid fa-cloud-sun";
-            if (c <= 67) return "fa-solid fa-cloud-showers-heavy";
-            if (c <= 77) return "fa-solid fa-snowflake";
-            if (c >= 95) return "fa-solid fa-cloud-bolt";
-            return "fa-solid fa-cloud";
+        function viewAlerts() {
+            if(activeAlertUrl) { window.open("https://www.weather.gov", "_blank"); }
+            else { alert("No active advisories for this sector."); }
         }
 
-        function getConditionText(c) {
-            const m = { 0: "Clear", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast", 45: "Fog", 61: "Rain", 71: "Snow", 95: "Storm" };
-            return m[c] || "Active";
-        }
-
-        function toggleMode() { document.body.classList.toggle('light-mode'); }
-        function toggleAudio() {
-            if (!audioActive) { rainSfx.play(); document.getElementById('audioBtn').style.color = 'var(--green)'; }
-            else { rainSfx.pause(); document.getElementById('audioBtn').style.color = '#fff'; }
-            audioActive = !audioActive;
-        }
-
-        function runDiag() { alert("DIAGNOSTIC: Satellite Uplink Optimal. Sensor Stability at 100%. Latency: 24ms."); }
-
-        setInterval(() => { document.getElementById('osTime').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
-        zipInput.addEventListener('change', syncKernel);
-        window.onload = syncKernel;
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-US', { hour12: false }); }, 1000);
+        window.onload = syncOS;
     </script>
 </body>
 </html>
