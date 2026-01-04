@@ -1,397 +1,252 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stony Weather Station</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;900&display=swap">
+  <style>
+    :root {
+      --green: #00f5b7;
+      --text: #f2f2f2;
+      --tile-bg: rgba(18, 22, 38, 0.78);
+      --body-bg: #050a1a;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --accent-red: #ff4d4d;
+      --val-color: #ffffff;
+      --label-opacity: 0.6;
+      --glass: blur(40px) saturate(180%);
+      --mac-shadow: 0 25px 50px rgba(0,0,0,0.6);
+      --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    }
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stony's Weather Station | Pro Persistence Build</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    * {
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    <style>
-        /* --- DYNAMIC THEME ENGINE --- */
-        :root {
-            --green: #00f5b7;
-            --text: #f2f2f2;
-            --tile-bg: rgba(18, 22, 38, 0.78); 
-            --body-bg: #050a1a;
-            --border-color: rgba(255, 255, 255, 0.12);
-            --accent-red: #ff4d4d;
-            --val-color: #ffffff;
-            --label-opacity: 0.6;
-            --glass: blur(40px) saturate(180%);
-            --mac-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--body-bg) url('./background.png') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.8s var(--ease);
+    }
 
-        body.light-mode {
-            --tile-bg: rgba(240, 242, 245, 0.92);
-            --text: #1a1a2e;
-            --body-bg: #eef2f7;
-            --border-color: rgba(0, 0, 0, 0.1);
-            --val-color: #000000;
-            --label-opacity: 0.85;
-            --mac-shadow: 0 15px 40px rgba(0,0,0,0.12);
-        }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-top: 20px;
+    }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-body {
-    margin: 0; 
-    padding: 0;
-    font-family: "Poppins", sans-serif;
-    background: var(--body-bg) url('./background.png') no-repeat center center fixed;
-    background-size: cover;
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-    transition: background 0.8s var(--ease);
-}
-        /* macOS Menu Bar */
-        .mac-menu-bar {
-            height: 32px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 22px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10002;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-        }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
 
-        header { padding: 40px 20px 20px; text-align: center; }
-        .title-main { font-size: 5.5rem; font-weight: 900; line-height: 0.8; text-shadow: 7px 7px 0 rgba(0,0,0,0.8); letter-spacing: -3px; color: #fff; }
-        .title-sub { font-size: 1.8rem; font-weight: 300; letter-spacing: 12px; text-transform: uppercase; color: var(--green); display: block; margin-top: 15px; }
+    .glass-tile {
+      background: var(--tile-bg);
+      border-radius: 25px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      backdrop-filter: var(--glass);
+      box-shadow: var(--mac-shadow);
+      flex: 1 1 400px;
+      min-height: 300px;
+      color: var(--val-color);
+    }
 
-        .app-shell {
-            max-width: 1700px;
-            margin: 0 auto;
-            padding: 20px 40px 100px;
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 30px;
-        }
+    .radar-panel {
+      height: 500px;
+      padding: 0;
+      overflow: hidden;
+    }
 
-        .glass-tile {
-            background: var(--tile-bg);
-            border-radius: 45px;
-            padding: 45px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: var(--glass);
-            box-shadow: var(--mac-shadow);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            min-height: 720px;
-        }
+    #radarMap {
+      height: 100%;
+      width: 100%;
+      border-radius: 25px;
+    }
 
-        .current-header-grid {
-            display: grid;
-            grid-template-columns: 100px 1fr 280px;
-            gap: 30px;
-            align-items: center;
-            margin-bottom: 25px;
-        }
+    #zipInput {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
 
-        .mascot-cell img {
-            width: 100px;
-            border-radius: 20px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
-            animation: floating 6s ease-in-out infinite alternate;
-        }
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-        @keyframes floating { 0% { transform: translateY(0); } 100% { transform: translateY(-15px); } }
+    button:hover {
+      opacity: 0.9;
+    }
 
-        .primary-temp { font-size: 10rem; font-weight: 900; color: var(--green); line-height: 0.8; letter-spacing: -6px; }
-        .condition-label { font-weight: 900; color: var(--green); letter-spacing: 4px; text-transform: uppercase; font-size: 1.4rem; }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
 
-        .btn-stack { display: flex; flex-direction: column; gap: 15px; }
-        .mac-btn {
-            padding: 16px; border-radius: 20px; border: 2px solid var(--green);
-            background: transparent; color: var(--green); font-weight: 900;
-            text-transform: uppercase; cursor: pointer; transition: 0.3s var(--ease);
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .mac-btn:hover { background: var(--green); color: #000; transform: translateY(-3px); }
-
-        .forecast-summary { margin-bottom: 20px; line-height: 1.6; opacity: 0.8; font-size: 0.95rem; }
-
-        .sensor-container {
-            display: flex;
-            flex-grow: 1;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sensor-matrix {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 20px;
-            width: 100%;
-        }
-
-        .data-point {
-            background: rgba(255,255,255,0.05);
-            padding: 28px 20px; 
-            border-radius: 25px; 
-            border: 1px solid var(--border-color);
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            transition: 0.3s;
-        }
-        .data-point:hover { background: rgba(255,255,255,0.1); border-color: var(--green); }
-        .data-point i { color: var(--green); font-size: 1.6rem; margin-bottom: 12px; }
-        .d-label { font-size: 0.8rem; text-transform: uppercase; opacity: var(--label-opacity); font-weight: 600; letter-spacing: 1px; }
-        .d-value { font-weight: 900; font-size: 1.8rem; color: var(--val-color); margin-top: 5px; }
-
-        .forecast-grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(7, 1fr);
-            gap: 15px;
-            flex-grow: 1;
-            padding-bottom: 15px; 
-        }
-
-        .day-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            padding: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: 0.3s;
-        }
-        .day-card:hover { border-color: var(--green); background: rgba(0, 245, 183, 0.05); }
-        .day-icon { font-size: 2.2rem; }
-        .day-label { font-weight: 900; font-size: 0.9rem; }
-        .day-temps { text-align: right; }
-        .hi-t { font-weight: 900; font-size: 1.3rem; color: var(--val-color); }
-        .lo-t { opacity: 0.5; font-size: 0.9rem; margin-left: 5px; }
-
-        .radar-panel { grid-column: 1 / -1; height: 550px; padding: 0; overflow: hidden; background: #000; margin-top: 10px; }
-        #radarFrame { width: 100%; height: 125%; border: none; margin-top: -70px; }
-
-        .system-dock {
-            position: fixed; bottom: 30px; right: 40px;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(25px);
-            padding: 10px 20px; border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; gap: 15px; z-index: 10000;
-        }
-        .dock-item {
-            width: 45px; height: 45px; border-radius: 12px;
-            background: rgba(255,255,255,0.1); color: #fff; display: flex;
-            align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
-        }
-        .dock-item:hover { transform: scale(1.2); background: var(--green); color: #000; }
-
-        .mac-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10001; backdrop-filter: blur(20px); }
-        .modal-body { background: var(--tile-bg); width: 85%; max-width: 1000px; margin: 5% auto; padding: 60px; border-radius: 40px; border: 2px solid var(--green); position: relative; max-height: 80vh; overflow-y: auto; }
-        .close-x { position: absolute; top: 30px; right: 40px; font-size: 3rem; color: var(--green); cursor: pointer; }
-        footer { text-align: center; padding: 40px; opacity: 0.4; font-size: 0.8rem; letter-spacing: 5px; text-transform: uppercase; width: 100%; }
-        .zip-input { background: rgba(255,255,255,0.1); border: none; color: #fff; padding: 2px 10px; border-radius: 5px; font-size: 0.8rem; width: 60px; text-align: center; outline: none; }
-        
-        #hazardBtn.active-warn { border-color: var(--accent-red); color: var(--accent-red); animation: pulse-red 2s infinite; }
-    </style>
+      .glass-tile {
+        width: 90%;
+      }
+    }
+  </style>
 </head>
-<body class="dark-mode">
+<body>
+  <h1>Stony Weather Station</h1>
 
-    <audio id="sndClick" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-
-    <div class="mac-menu-bar">
-        <div class="menu-left">
-            <i class="fa-brands fa-apple"></i>
-            <span style="font-weight:900;">StonyWeather</span>
-            <input type="text" id="zipInput" class="zip-input" maxlength="5">
-            <span style="opacity: 0.6; margin-left:10px;">File Edit View Station Window Help</span>
-        </div>
-        <div class="menu-right">
-            <i class="fa-solid fa-tower-broadcast"></i>
-            <i class="fa-solid fa-wifi"></i>
-            <span id="systemClock">12:00 PM</span>
-        </div>
+  <div class="container">
+    <div class="glass-tile">
+      <h2>Current Weather</h2>
+      <input id="zipInput" placeholder="Enter ZIP" />
+      <button onclick="updateZIP()">Update</button>
+      <p id="dispTemp">--°</p>
+      <p id="dispSummary">Loading...</p>
+      <button onclick="toggleTheme()">Toggle Theme</button>
+    </div>
+    <div class="glass-tile radar-panel">
+      <div id="radarMap"></div>
     </div>
 
-    <header>
-        <div class="title-block">
-            <span class="title-main">Stony's</span>
-            <span class="title-sub">Weather Station</span>
-        </div>
-    </header>
-
-    <main class="app-shell">
-        <div class="glass-tile">
-            <div class="current-header-grid">
-                <div class="mascot-cell"><img src="mascot.png" alt="Mascot"></div>
-                <div class="temp-cell">
-                    <div class="primary-temp" id="dispTemp">--°</div>
-                    <div class="condition-label" id="dispSummary">Syncing...</div>
-                </div>
-                <div class="btn-stack">
-                    <button class="mac-btn" onclick="openModal('modalAFD')"><i class="fa-solid fa-file-waveform"></i> Discussion</button>
-                    <button id="hazardBtn" class="mac-btn" onclick="openModal('modalAlerts')"><i class="fa-solid fa-shield-halved"></i> No Hazards</button>
-                </div>
-            </div>
-            <div class="forecast-summary" id="dispDetail">Establishing satellite link...</div>
-            <div class="sensor-container">
-                <div class="sensor-matrix">
-                    <div class="data-point"><i class="fa-solid fa-temperature-half"></i><span class="d-label">Feels Like</span><span class="d-value" id="valFeels">--</span></div>
-                    <div class="data-point"><i class="fa-solid fa-wind"></i><span class="d-label">Wind Gust</span><span class="d-value" id="valWind">--</span></div>
-                    <div class="data-point"><i class="fa-solid fa-droplet"></i><span class="d-label">Humidity</span><span class="d-value" id="valHum">--</span></div>
-                    <div class="data-point"><i class="fa-solid fa-eye"></i><span class="d-label">Visibility</span><span class="d-value" id="valVis">--</span></div>
-                    <div class="data-point"><i class="fa-solid fa-sun"></i><span class="d-label">UV Index</span><span class="d-value" id="valUV">--</span></div>
-                    <div class="data-point"><i class="fa-solid fa-cloud-rain"></i><span class="d-label">Dew Point</span><span class="d-value" id="valDew">--</span></div>
-                </div>
-            </div>
-        </div>
-        <div class="glass-tile">
-            <h3 style="margin-bottom:25px; text-transform:uppercase; letter-spacing:5px; font-size:0.9rem; opacity:0.6;"><i class="fa-solid fa-calendar-days" style="color:var(--green)"></i> 14-Day Outlook</h3>
-            <div id="gridForecast" class="forecast-grid-container"></div>
-        </div>
-        <div class="glass-tile radar-panel">
-  <div id="radarMap" style="width: 100%; height: 100%; border-radius: 25px;"></div>
-</div>
-
-    </main>
-
-    <div class="system-dock">
-        <div class="dock-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i></div>
-        <div class="dock-item" onclick="toggleAudio()"><i id="volIcon" class="fa-solid fa-volume-xmark"></i></div>
-        <div class="dock-item" onclick="refreshStation()"><i class="fa-solid fa-rotate-right"></i></div>
+    <div class="glass-tile" id="forecastPanel">
+      <h2>Forecast</h2>
+      <ul id="forecastList"></ul>
     </div>
 
-    <div id="modalAFD" class="mac-modal"><div class="modal-body"><span class="close-x" onclick="closeModal('modalAFD')">&times;</span><h2 style="color:var(--green)">Forecaster Discussion</h2><pre id="bodyAFD" style="white-space:pre-wrap; font-family:monospace;"></pre></div></div>
-    <div id="modalAlerts" class="mac-modal"><div class="modal-body"><span class="close-x" onclick="closeModal('modalAlerts')">&times;</span><h2 style="color:var(--accent-red)">Weather Advisories</h2><div id="bodyAlerts">Scanning...</div></div></div>
+    <div class="glass-tile" id="hazardsPanel">
+      <h2>Hazards</h2>
+      <ul id="hazardsList"></ul>
+    </div>
 
-    <footer>Manchester Station NH-01 | Latency: <span id="ping">--</span>ms | Last Sync: <span id="syncStamp">--</span></footer>
+    <div class="glass-tile" id="discussionPanel">
+      <h2>Discussion</h2>
+      <pre id="discussionText">Loading...</pre>
+    </div>
+  </div>
 
-    <script>
-        let audioOn = false;
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.body.className = theme;
 
-        // --- NEW PERSISTENCE LOGIC ---
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            localStorage.setItem('stonyTheme', isLight ? 'light' : 'dark');
+    function toggleTheme() {
+      const newTheme = document.body.className === 'dark' ? 'light' : 'dark';
+      document.body.className = newTheme;
+      localStorage.setItem('theme', newTheme);
+    }
+
+    function updateZIP() {
+      const zip = document.getElementById("zipInput").value;
+      localStorage.setItem("zip", zip);
+      refreshStation(zip);
+    }
+
+    function loadSavedState() {
+      const savedZip = localStorage.getItem("zip");
+      if (savedZip) {
+        document.getElementById("zipInput").value = savedZip;
+        refreshStation(savedZip);
+      } else {
+        refreshStation("03101");
+      }
+    }
+
+    async function refreshStation(zip) {
+      try {
+        const geoRes = await fetch(`https://api.zippopotam.us/us/${zip}`);
+        const geoData = await geoRes.json();
+        const { latitude: lat, longitude: lon } = geoData.places[0];
+
+        // Open-Meteo
+        const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto`);
+        const wData = await wRes.json();
+        document.getElementById("dispTemp").innerText = Math.round(wData.current.temperature_2m) + "°";
+        document.getElementById("dispSummary").innerText = "Condition Code: " + wData.current.weather_code;
+        // Forecast
+        const fRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+        const pointData = await fRes.json();
+        const forecastUrl = pointData.properties.forecast;
+        const gridId = pointData.properties.gridId;
+        const gridX = pointData.properties.gridX;
+        const gridY = pointData.properties.gridY;
+
+        const detailedForecast = await fetch(forecastUrl).then(r => r.json());
+        const forecastList = document.getElementById("forecastList");
+        forecastList.innerHTML = "";
+        detailedForecast.properties.periods.slice(0, 5).forEach(period => {
+          const li = document.createElement("li");
+          li.textContent = `${period.name}: ${period.detailedForecast}`;
+          forecastList.appendChild(li);
+        });
+
+        // Hazards
+        const hazardRes = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`);
+        const hazardData = await hazardRes.json();
+        const hazardList = document.getElementById("hazardsList");
+        hazardList.innerHTML = "";
+        hazardData.features.forEach(feature => {
+          const li = document.createElement("li");
+          li.textContent = `${feature.properties.headline}`;
+          hazardList.appendChild(li);
+        });
+
+        // Forecast Discussion
+        const discussionRes = await fetch(`https://api.weather.gov/gridpoints/${gridId}/${gridX},${gridY}/forecast`);
+        const discussionData = await discussionRes.json();
+        document.getElementById("discussionText").innerText = discussionData.properties.periods[0].detailedForecast;
+
+        // Leaflet Radar Map (Safe initialization)
+        if (!window.radarMap) {
+          window.radarMap = L.map('radarMap').setView([lat, lon], 7);
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+          }).addTo(window.radarMap);
+        } else {
+          window.radarMap.setView([lat, lon], 7);
         }
 
-        function loadSavedState() {
-            // Load Theme
-            const savedTheme = localStorage.getItem('stonyTheme');
-            if (savedTheme === 'light') document.body.classList.add('light-mode');
-            
-            // Load Zip
-            const savedZip = localStorage.getItem('stonyZip');
-            document.getElementById('zipInput').value = savedZip || "03101";
+        // Remove previous radar layer if exists
+        if (window.radarLayer) {
+          window.radarMap.removeLayer(window.radarLayer);
         }
 
-        async function refreshStation() {
-            const start = Date.now();
-            const currentZip = document.getElementById('zipInput').value || "03101";
-            localStorage.setItem('stonyZip', currentZip); // Save current zip
+        const timestamp = Math.floor(Date.now() / 60000) * 60;
+        window.radarLayer = L.tileLayer(
+          `https://tilecache.rainviewer.com/v2/radar/${timestamp}/256/{z}/{x}/{y}/2/1_1.png`,
+          {
+            opacity: 0.6,
+            attribution: 'RainViewer'
+          }
+        ).addTo(window.radarMap);
+                } catch (err) {
+        console.error("Weather or radar load failed:", err);
+        document.getElementById("dispSummary").innerText = "Error loading data.";
+        document.getElementById("forecastList").innerHTML = "<li>Unable to load forecast.</li>";
+        document.getElementById("hazardsList").innerHTML = "<li>Unable to load hazards.</li>";
+        document.getElementById("discussionText").innerText = "Unable to load discussion.";
+      }
+    }
 
-            try {
-                const geo = await fetch(`https://api.zippopotam.us/us/${currentZip}`).then(r => r.json());
-                const { latitude: lat, longitude: lon } = geo.places[0];
-                // Initialize map once
-if (!window.radarMap) {
-    window.radarMap = L.map('radarMap').setView([lat, lon], 7);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(window.radarMap);
-}
-
-// Remove old radar layer if exists
-if (window.radarLayer) {
-    window.radarMap.removeLayer(window.radarLayer);
-}
-
-// Get radar tiles
-const timestamp = Math.floor(Date.now() / 60000) * 60;
-window.radarLayer = L.tileLayer(
-  `https://tilecache.rainviewer.com/v2/radar/${timestamp}/256/{z}/{x}/{y}/2/1_1.png`,
-  {
-    opacity: 0.6,
-    attribution: 'Radar by RainViewer'
-  }
-).addTo(window.radarMap);
-
-// Center map
-window.radarMap.setView([lat, lon], 8);
-
-
-                const w = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,uv_index,visibility,dew_point_2m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=14`).then(r => r.json());
-                
-                document.getElementById('dispTemp').innerText = Math.round(w.current.temperature_2m) + "°";
-                document.getElementById('valFeels').innerText = Math.round(w.current.apparent_temperature) + "°F";
-                document.getElementById('valWind').innerText = Math.round(w.current.wind_speed_10m) + " mph";
-                document.getElementById('valHum').innerText = w.current.relative_humidity_2m + "%";
-                document.getElementById('valVis').innerText = (w.current.visibility / 1609).toFixed(1) + " mi";
-                document.getElementById('valUV').innerText = w.current.uv_index;
-                document.getElementById('valDew').innerText = Math.round(w.current.dew_point_2m) + "°";
-
-                const grid = document.getElementById('gridForecast');
-                grid.innerHTML = "";
-                w.daily.time.forEach((t, i) => {
-                    grid.innerHTML += `
-                        <div class="day-card">
-                            <span class="day-label">${new Date(t + 'T00:00').toLocaleDateString('en-US', {weekday:'short', month:'numeric', day:'numeric'})}</span>
-                            <span class="day-icon">${getIcon(w.daily.weather_code[i])}</span>
-                            <div class="day-temps"><span class="hi-t">${Math.round(w.daily.temperature_2m_max[i])}°</span><span class="lo-t">${Math.round(w.daily.temperature_2m_min[i])}°</span></div>
-                        </div>`;
-                });
-
-                const p = await fetch(`https://api.weather.gov/points/${lat},${lon}`).then(r => r.json());
-                const f = await fetch(p.properties.forecast).then(r => r.json());
-                document.getElementById('dispDetail').innerText = f.properties.periods[0].detailedForecast;
-                document.getElementById('dispSummary').innerText = f.properties.periods[0].shortForecast;
-
-                const a = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`).then(r => r.json());
-                const hb = document.getElementById('hazardBtn');
-                if(a.features.length > 0) {
-                    hb.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hazards Active';
-                    hb.classList.add('active-warn');
-                    document.getElementById('bodyAlerts').innerHTML = a.features.map(x => `<h3>${x.properties.event}</h3><p>${x.properties.headline}</p>`).join('');
-                } else {
-                    hb.innerHTML = '<i class="fa-solid fa-shield-halved"></i> No Hazards';
-                    hb.classList.remove('active-warn');
-                    document.getElementById('bodyAlerts').innerText = "All clear.";
-                }
-
-                const afdList = await fetch(`https://api.weather.gov/products/types/AFD/locations/${p.properties.gridId}`).then(r => r.json());
-                const afd = await fetch(afdList['@graph'][0]['@id']).then(r => r.json());
-                document.getElementById('bodyAFD').innerText = afd.productText;
-
-                document.getElementById('ping').innerText = Date.now() - start;
-                document.getElementById('syncStamp').innerText = new Date().toLocaleTimeString();
-            } catch(e) { console.error(e); }
-        }
-
-        function getIcon(c) {
-            if(c === 0) return "☀️"; if(c < 4) return "⛅"; if(c < 51) return "🌫️"; if(c < 61) return "🌧️"; if(c < 80) return "❄️"; return "⛈️";
-        }
-
-        function openModal(id) { document.getElementById(id).style.display = 'block'; if(audioOn) document.getElementById('sndClick').play(); }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function toggleAudio() { audioOn = !audioOn; document.getElementById('volIcon').className = audioOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark'; }
-
-        document.getElementById('zipInput').addEventListener('keypress', (e) => { if(e.key === 'Enter') refreshStation(); });
-        setInterval(() => { document.getElementById('systemClock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
-        
-        // BOOT SEQUENCE
-        loadSavedState();
-        refreshStation();
-    </script>
+    // Start
+    loadSavedState();
+  </script>
 </body>
 </html>
+
