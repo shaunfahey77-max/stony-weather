@@ -25,11 +25,8 @@
       --mac-shadow: 0 25px 50px rgba(0,0,0,0.6);
       --ease: cubic-bezier(0.23, 1, 0.32, 1);
 
-      /* Radar tuning */
-      --radar-overlay-opacity: 0.78;
-      --radar-contrast: 1.08;
-      --radar-saturate: 1.05;
-      --radar-brightness: 1.12;
+      /* Radar opacity */
+      --radar-opacity: 0.55;
     }
 
     body.light-mode {
@@ -40,12 +37,7 @@
       --val-color: #000000;
       --label-opacity: 0.85;
       --mac-shadow: 0 15px 40px rgba(0,0,0,0.12);
-
-      /* Radar tuning in light mode */
-      --radar-overlay-opacity: 0.80;
-      --radar-contrast: 1.05;
-      --radar-saturate: 1.02;
-      --radar-brightness: 1.05;
+      --radar-opacity: 0.50;
     }
 
     * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -226,7 +218,7 @@
     }
     #map { width: 100%; height: 100%; z-index: 1; }
 
-    /* ✅ LIGHTER overlay (no multiply) */
+    /* ✅ lighter overlay (no multiply) */
     .radar-panel::before{
       content:"";
       position:absolute;
@@ -234,25 +226,24 @@
       pointer-events:none;
       z-index:2;
       background:
-        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.05), rgba(0,0,0,0.22)),
-        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.10));
+        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.02), rgba(0,0,0,0.10)),
+        linear-gradient(to bottom, rgba(0,0,0,0.02), rgba(0,0,0,0.06));
       mix-blend-mode: normal;
     }
 
-    /* ✅ Softer default tile filters (brighter, less crushed) */
-    .radar-panel .leaflet-tile{
-      filter: contrast(var(--radar-contrast)) saturate(var(--radar-saturate)) brightness(var(--radar-brightness));
+    /* ✅ IMPORTANT: Do NOT filter ALL leaflet tiles */
+    .radar-panel .leaflet-pane img.leaflet-tile{
+      filter: none;
     }
 
-    /* Map Boost */
-    .radar-panel.boost-on .leaflet-tile{
-      filter: contrast(1.18) saturate(1.10) brightness(1.18) !important;
+    /* ✅ Only filter RADAR tiles (radarPane) */
+    .radar-panel .leaflet-pane.radarPane img.leaflet-tile{
+      filter: contrast(1.15) saturate(1.10) brightness(1.20);
     }
-    .radar-panel.boost-on::before{
-      background:
-        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.04), rgba(0,0,0,0.18)),
-        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.12));
-      mix-blend-mode: normal;
+
+    /* ✅ Boost only affects radar tiles */
+    .radar-panel.boost-on .leaflet-pane.radarPane img.leaflet-tile{
+      filter: contrast(1.25) saturate(1.15) brightness(1.30) !important;
     }
 
     .radar-controls {
@@ -373,7 +364,6 @@
       color: var(--text);
     }
 
-    /* Leaflet container safety */
     .leaflet-container { background: #000; }
     .leaflet-tile { image-rendering: auto; }
 
@@ -520,7 +510,6 @@
       <div class="radar-controls">
         <button class="radar-btn" onclick="toggleRadar()"><i id="playIcon" class="fa-solid fa-play"></i></button>
 
-        <!-- Map Boost -->
         <button class="radar-btn" id="boostBtn" onclick="toggleMapBoost()" title="Map Boost">
           <i id="boostIcon" class="fa-solid fa-wand-magic-sparkles"></i>
         </button>
@@ -563,15 +552,12 @@
       document.body.classList.toggle('light-mode');
       const isLight = document.body.classList.contains('light-mode');
       localStorage.setItem('stonyTheme', isLight ? 'light' : 'dark');
-
-      // ✅ Keep map sized correctly after theme swap
       if (map) setTimeout(() => map.invalidateSize(true), 150);
     }
 
     function loadSavedState() {
       const savedTheme = localStorage.getItem('stonyTheme');
       if (savedTheme === 'light') document.body.classList.add('light-mode');
-
       const savedZip = localStorage.getItem('stonyZip');
       document.getElementById('zipInput').value = savedZip || "03101";
     }
@@ -591,10 +577,8 @@
     function applyBoostUI(){
       const panel = document.querySelector('.radar-panel');
       const btn = document.getElementById('boostBtn');
-
       if(panel) panel.classList.toggle('boost-on', mapBoostOn);
       if(btn) btn.classList.toggle('is-on', mapBoostOn);
-
       if(map) setTimeout(() => map.invalidateSize(true), 50);
     }
 
@@ -602,17 +586,30 @@
       if (!map) {
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat, lon], 9);
 
-        // ✅ MUCH BRIGHTER / READABLE basemap (Voyager)
-        const base = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          opacity: 1,
-          zIndex: 10
-        }).addTo(map);
+        // ✅ Create panes so we can style radar separately
+        map.createPane('basePane');
+        map.getPane('basePane').classList.add('basePane');
+        map.getPane('basePane').style.zIndex = 200;
 
-        // ✅ Labels overlay for readability
-        const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-          opacity: 0.95,
-          zIndex: 90
-        }).addTo(map);
+        map.createPane('labelsPane');
+        map.getPane('labelsPane').classList.add('labelsPane');
+        map.getPane('labelsPane').style.zIndex = 450;
+
+        map.createPane('radarPane');
+        map.getPane('radarPane').classList.add('radarPane');
+        map.getPane('radarPane').style.zIndex = 500;
+
+        // ✅ Brighter readable base map
+        const base = L.tileLayer(
+          'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+          { pane: 'basePane', opacity: 1 }
+        ).addTo(map);
+
+        // ✅ Labels overlay
+        const labels = L.tileLayer(
+          'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png',
+          { pane: 'labelsPane', opacity: 0.95 }
+        ).addTo(map);
 
         map._stonyBase = base;
         map._stonyLabels = labels;
@@ -627,25 +624,20 @@
       radarLayers = [];
 
       timestamps.forEach((ts) => {
-        const layer = L.tileLayer(`https://tilecache.rainviewer.com/v2/radar/${ts}/256/{z}/{x}/{y}/1/1_1.png`, {
-          opacity: 0,
-          zIndex: 100
-        });
+        const layer = L.tileLayer(
+          `https://tilecache.rainviewer.com/v2/radar/${ts}/256/{z}/{x}/{y}/1/1_1.png`,
+          { pane: 'radarPane', opacity: 0, zIndex: 1 }
+        );
         radarLayers.push(layer);
         layer.addTo(map);
       });
 
       currentFrame = radarLayers.length - 1;
-
-      const op = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--radar-overlay-opacity')) || 0.78;
+      const op = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--radar-opacity')) || 0.55;
       radarLayers[currentFrame].setOpacity(op);
-
       updateFrameTime();
 
-      // Ensure correct sizing after responsive changes
       setTimeout(() => map.invalidateSize(true), 100);
-
-      // Apply saved boost state
       applyBoostUI();
     }
 
@@ -663,9 +655,8 @@
           radarLayers[currentFrame].setOpacity(0);
           currentFrame = (currentFrame + 1) % radarLayers.length;
 
-          const op = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--radar-overlay-opacity')) || 0.78;
+          const op = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--radar-opacity')) || 0.55;
           radarLayers[currentFrame].setOpacity(op);
-
           updateFrameTime();
         }, 600);
       }
@@ -718,12 +709,10 @@
         document.getElementById('dispDetail').innerText = f.properties.periods[0].detailedForecast;
         document.getElementById('dispSummary').innerText = f.properties.periods[0].shortForecast;
 
-        // Alerts
         const a = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`).then(r => r.json());
         const hb = document.getElementById('hazardBtn');
         const alertBody = document.getElementById('bodyAlerts');
 
-        // HWO
         const officeId = p.properties.gridId;
         const hwoData = await fetch(`https://api.weather.gov/products/types/HWO/locations/${officeId}`).then(r => r.json());
 
@@ -778,15 +767,9 @@
       return "⛈️";
     }
 
-    function openModal(id) {
-      document.getElementById(id).style.display = 'block';
-      if (audioOn) document.getElementById('sndClick').play();
-    }
+    function openModal(id) { document.getElementById(id).style.display = 'block'; if (audioOn) document.getElementById('sndClick').play(); }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function toggleAudio() {
-      audioOn = !audioOn;
-      document.getElementById('volIcon').className = audioOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
-    }
+    function toggleAudio() { audioOn = !audioOn; document.getElementById('volIcon').className = audioOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark'; }
 
     document.getElementById('zipInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') refreshStation(); });
 
@@ -794,15 +777,10 @@
       document.getElementById('systemClock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
     }, 1000);
 
-    // 15-Minute Auto Refresh
     setInterval(refreshStation, 900000);
 
-    // Keep Leaflet happy on resize/rotate
-    window.addEventListener('resize', () => {
-      if (map) map.invalidateSize(true);
-    });
+    window.addEventListener('resize', () => { if (map) map.invalidateSize(true); });
 
-    // Init
     loadSavedState();
     loadBoostState();
     refreshStation();
