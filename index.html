@@ -27,9 +27,9 @@
 
       /* Radar tuning */
       --radar-overlay-opacity: 0.78;
-      --radar-contrast: 1.15;
-      --radar-saturate: 1.15;
-      --radar-brightness: 1.05;
+      --radar-contrast: 1.08;
+      --radar-saturate: 1.05;
+      --radar-brightness: 1.12;
     }
 
     body.light-mode {
@@ -42,10 +42,10 @@
       --mac-shadow: 0 15px 40px rgba(0,0,0,0.12);
 
       /* Radar tuning in light mode */
-      --radar-overlay-opacity: 0.8;
-      --radar-contrast: 1.10;
-      --radar-saturate: 1.05;
-      --radar-brightness: 1.02;
+      --radar-overlay-opacity: 0.80;
+      --radar-contrast: 1.05;
+      --radar-saturate: 1.02;
+      --radar-brightness: 1.05;
     }
 
     * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
@@ -224,35 +224,35 @@
       position: relative;
       min-height: unset;
     }
-
     #map { width: 100%; height: 100%; z-index: 1; }
 
-    /* Readability overlay */
-    .radar-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
+    /* ✅ LIGHTER overlay (no multiply) */
+    .radar-panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:2;
       background:
-        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.15), rgba(0,0,0,0.45)),
-        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.20));
-      mix-blend-mode: multiply;
+        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.05), rgba(0,0,0,0.22)),
+        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.10));
+      mix-blend-mode: normal;
     }
 
-    /* Filters applied to tiles */
-    .radar-panel .leaflet-tile {
+    /* ✅ Softer default tile filters (brighter, less crushed) */
+    .radar-panel .leaflet-tile{
       filter: contrast(var(--radar-contrast)) saturate(var(--radar-saturate)) brightness(var(--radar-brightness));
     }
 
-    /* Map Boost state */
+    /* Map Boost */
     .radar-panel.boost-on .leaflet-tile{
-      filter: contrast(1.35) saturate(1.25) brightness(1.12) !important;
+      filter: contrast(1.18) saturate(1.10) brightness(1.18) !important;
     }
     .radar-panel.boost-on::before{
       background:
-        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.10), rgba(0,0,0,0.55)),
-        linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.28));
+        radial-gradient(1200px 700px at 50% 50%, rgba(0,0,0,0.04), rgba(0,0,0,0.18)),
+        linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.12));
+      mix-blend-mode: normal;
     }
 
     .radar-controls {
@@ -458,7 +458,6 @@
 </head>
 
 <body class="dark-mode">
-
   <audio id="sndClick" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
   <div class="mac-menu-bar">
@@ -565,6 +564,7 @@
       const isLight = document.body.classList.contains('light-mode');
       localStorage.setItem('stonyTheme', isLight ? 'light' : 'dark');
 
+      // ✅ Keep map sized correctly after theme swap
       if (map) setTimeout(() => map.invalidateSize(true), 150);
     }
 
@@ -602,14 +602,14 @@
       if (!map) {
         map = L.map('map', { zoomControl: false, attributionControl: false }).setView([lat, lon], 9);
 
-        // Base map
-        const base = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // ✅ MUCH BRIGHTER / READABLE basemap (Voyager)
+        const base = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
           opacity: 1,
           zIndex: 10
         }).addTo(map);
 
-        // Labels overlay for readability
-        const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+        // ✅ Labels overlay for readability
+        const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
           opacity: 0.95,
           zIndex: 90
         }).addTo(map);
@@ -645,7 +645,7 @@
       // Ensure correct sizing after responsive changes
       setTimeout(() => map.invalidateSize(true), 100);
 
-      // Apply boost class (in case it was saved)
+      // Apply saved boost state
       applyBoostUI();
     }
 
@@ -718,12 +718,12 @@
         document.getElementById('dispDetail').innerText = f.properties.periods[0].detailedForecast;
         document.getElementById('dispSummary').innerText = f.properties.periods[0].shortForecast;
 
-        // Enhanced Alerts Logic
+        // Alerts
         const a = await fetch(`https://api.weather.gov/alerts/active?point=${lat},${lon}`).then(r => r.json());
         const hb = document.getElementById('hazardBtn');
         const alertBody = document.getElementById('bodyAlerts');
 
-        // Fetch HWO
+        // HWO
         const officeId = p.properties.gridId;
         const hwoData = await fetch(`https://api.weather.gov/products/types/HWO/locations/${officeId}`).then(r => r.json());
 
